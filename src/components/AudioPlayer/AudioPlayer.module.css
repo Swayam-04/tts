@@ -1,0 +1,129 @@
+.card {
+  margin-top: 24px;
+}
+
+.visualizer {
+  position: relative;
+  width: 100%;
+}
+
+.controlsRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.playBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px !important;
+  height: 48px !important;
+  font-size: 20px !important;
+  background-color: var(--color-primary) !important;
+  border: none !important;
+  box-shadow: 0 4px 10px rgba(30, 136, 229, 0.4) !important;
+}
+
+.playBtn:hover:not(:disabled) {
+  background-color: var(--color-primary-hover) !important;
+  box-shadow: 0 4px 14px rgba(30, 136, 229, 0.6) !important;
+}
+
+.playBtn:disabled {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: var(--color-text-disabled) !important;
+  box-shadow: none !important;
+}
+
+.pulseBtn {
+  animation: pulse-button 1.5s infinite alternate;
+}
+
+@keyframes pulse-button {
+  0% { box-shadow: 0 0 0 0 rgba(30, 136, 229, 0.4); }
+  100% { box-shadow: 0 0 0 8px rgba(30, 136, 229, 0); }
+}
+
+.sliderContainer {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 12px;
+}
+
+.timeLabel {
+  font-size: 0.75rem;
+  font-family: monospace;
+  color: var(--color-text-secondary);
+  min-width: 35px;
+}
+
+.slider {
+  flex: 1;
+  margin: 0 !important;
+  padding: 8px 0 !important;
+}
+
+.volumeContainer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 140px;
+}
+
+.volumeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary) !important;
+  font-size: 16px !important;
+}
+
+.volumeBtn:hover:not(:disabled) {
+  color: var(--color-text-main) !important;
+}
+
+.volumeSlider {
+  flex: 1;
+  margin: 0 !important;
+  padding: 8px 0 !important;
+}
+
+.downloadBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--color-status-green) !important;
+  border-color: var(--color-status-green) !important;
+  font-weight: 550;
+  box-shadow: 0 2px 6px rgba(46, 164, 79, 0.2) !important;
+}
+
+.downloadBtn:hover:not(:disabled) {
+  background-color: #26893f !important;
+  border-color: #26893f !important;
+}
+
+.downloadBtn:disabled {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text-disabled) !important;
+  box-shadow: none !important;
+}
+
+@media (max-width: 768px) {
+  .controlsRow {
+    flex-wrap: wrap;
+  }
+  
+  .sliderContainer {
+    width: 100%;
+    order: -1;
+  }
+  
+  .volumeContainer {
+    flex: 1;
+  }
+}

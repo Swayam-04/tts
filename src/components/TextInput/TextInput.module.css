@@ -1,0 +1,102 @@
+.card {
+  height: 100%;
+}
+
+.textareaWrapper {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.textarea {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text-main) !important;
+  font-size: 1.05rem !important;
+  line-height: 1.6 !important;
+  border-radius: 8px !important;
+  padding: 14px !important;
+  transition: var(--transition-smooth) !important;
+}
+
+.textarea:hover {
+  border-color: var(--color-border-active) !important;
+}
+
+.textarea:focus {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px var(--color-primary-alpha) !important;
+  background-color: rgba(0, 0, 0, 0.3) !important;
+}
+
+.textarea:disabled {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text-secondary) !important;
+  cursor: not-allowed;
+}
+
+.charCounter {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 2px 6px;
+  border-radius: 4px;
+  pointer-events: none;
+  font-family: monospace;
+}
+
+.limitReached {
+  color: #ff4d4f;
+  font-weight: bold;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.spaceWrapper {
+  width: 100%;
+}
+
+.copyBtn, .clearBtn {
+  background-color: transparent !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text-secondary) !important;
+  transition: var(--transition-smooth);
+}
+
+.copyBtn:hover:not(:disabled), .clearBtn:hover:not(:disabled) {
+  border-color: var(--color-border-active) !important;
+  color: var(--color-text-main) !important;
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+.copyBtn:disabled, .clearBtn:disabled {
+  border-color: var(--color-border) !important;
+  color: var(--color-text-disabled) !important;
+}
+
+@media (max-width: 576px) {
+  .actions {
+    width: 100%;
+  }
+  
+  .spaceWrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px !important;
+  }
+  
+  .spaceWrapper > div {
+    width: 100%;
+  }
+  
+  .actions :global(.ant-btn) {
+    width: 100%;
+  }
+}

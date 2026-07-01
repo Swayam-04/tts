@@ -1,0 +1,235 @@
+.workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.playerContainer {
+  margin-top: 0;
+}
+
+/* Keyboard Shortcuts Helper styling */
+.shortcutsHelper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: rgba(255, 255, 255, 0.015);
+  border: 1px solid var(--color-border);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  font-weight: 550;
+  width: max-content;
+  margin: -10px auto 0 auto;
+  letter-spacing: 0.2px;
+}
+
+.keyboardIcon {
+  font-size: 14px;
+  color: var(--color-primary);
+}
+
+.shortcutsHelper code {
+  color: var(--color-text-main);
+  background-color: rgba(30, 136, 229, 0.1);
+  border: 1px solid var(--color-primary-alpha);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+/* Processing Pipeline Dashboard Styles */
+.pipelineCard {
+  border-radius: 10px !important;
+  border-color: var(--color-border-active) !important;
+  box-shadow: 0 4px 20px rgba(30, 136, 229, 0.15) !important;
+  background-color: var(--color-bg-card-hover) !important;
+  animation: slideDown 0.3s ease-out;
+}
+
+.pipelineHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.stopwatch {
+  font-family: monospace;
+  font-size: 0.95rem;
+  color: var(--color-primary);
+  font-weight: 700;
+  background-color: rgba(30, 136, 229, 0.1);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--color-primary-alpha);
+  letter-spacing: 0.5px;
+}
+
+.pipelineGrid {
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  gap: 24px;
+  align-items: center;
+}
+
+.timelineCol {
+  padding-left: 8px;
+}
+
+.timeline {
+  margin-top: 14px;
+}
+
+.timelineLabel {
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.timelineText {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  transition: var(--transition-smooth);
+}
+
+.pulseText {
+  color: var(--color-primary) !important;
+  font-weight: 750 !important;
+  animation: pulse-text-color 1s infinite alternate;
+}
+
+@keyframes pulse-text-color {
+  from { opacity: 0.75; text-shadow: 0 0 2px rgba(30, 136, 229, 0); }
+  to { opacity: 1; text-shadow: 0 0 4px rgba(30, 136, 229, 0.4); }
+}
+
+.iconCompleted {
+  color: var(--color-status-green);
+  font-size: 16px;
+}
+
+.iconActive {
+  color: var(--color-primary);
+  font-size: 16px;
+}
+
+.iconPending {
+  color: var(--color-text-disabled);
+  font-size: 16px;
+}
+
+.spin {
+  animation: spin-loader 1s linear infinite;
+}
+
+@keyframes spin-loader {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Progress Ring Column */
+.progressCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 100%;
+  border-left: 1px solid var(--color-border);
+  padding-left: 24px;
+}
+
+.progressRing :global(.ant-progress-circle-path) {
+  stroke-linecap: round;
+}
+
+.progressInfo {
+  position: absolute;
+  top: 50%;
+  left: calc(50% + 12px);
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+.progressPercent {
+  font-family: monospace;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-text-main);
+  line-height: 1;
+}
+
+.progressLabel {
+  font-size: 0.65rem;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-top: 4px;
+  letter-spacing: 0.5px;
+}
+
+/* Decoded Plain Text card */
+.decodedCard {
+  border-radius: 8px !important;
+  border-color: var(--color-border) !important;
+  animation: slideDown 0.3s ease-out;
+}
+
+.decodedTextarea {
+  background-color: rgba(255, 255, 255, 0.01) !important;
+  border-color: var(--color-border-active) !important;
+  color: #c9d1d9 !important;
+  font-size: 1.05rem !important;
+  line-height: 1.6 !important;
+  border-radius: 6px !important;
+  padding: 10px 12px !important;
+  resize: none;
+}
+
+.copyBtn {
+  color: var(--color-text-secondary) !important;
+}
+
+.copyBtn:hover {
+  color: var(--color-text-main) !important;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .pipelineGrid {
+    grid-template-columns: 100%;
+    gap: 16px;
+  }
+  
+  .progressCol {
+    border-left: none;
+    border-top: 1px solid var(--color-border);
+    padding-left: 0;
+    padding-top: 24px;
+    height: auto;
+  }
+  
+  .progressInfo {
+    left: 50%;
+  }
+  
+  .shortcutsHelper {
+    width: 100%;
+    margin-top: 0;
+  }
+}

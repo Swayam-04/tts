@@ -1,0 +1,281 @@
+/* Custom Design System variables - Premium Enterprise Dark Mode */
+:root {
+  --color-bg-main: #060913;
+  --color-bg-card: rgba(14, 22, 38, 0.85); /* Glassmorphic base */
+  --color-bg-card-hover: rgba(20, 31, 54, 0.9);
+  --color-navy-dark: rgba(6, 24, 48, 0.9);
+  --color-primary: #1e88e5;
+  --color-primary-hover: #42a5f5;
+  --color-primary-alpha: rgba(30, 136, 229, 0.12);
+  --color-text-main: #f0f6fc;
+  --color-text-secondary: #8b949e;
+  --color-text-disabled: #384358;
+  --color-border: #16243d;
+  --color-border-active: #263c62;
+  
+  --color-status-green: #2ea44f;
+  --color-status-green-glow: rgba(46, 164, 79, 0.35);
+  
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Outfit", "Inter", Roboto, sans-serif;
+  --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  
+  /* Layered Card Shadows */
+  --shadow-main: 0 10px 30px -10px rgba(0, 0, 0, 0.7), 
+                 inset 0 1px 0 rgba(255, 255, 255, 0.04), 
+                 0 1px 1px rgba(255, 255, 255, 0.02);
+  --shadow-glow: 0 0 14px rgba(30, 136, 229, 0.15);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-bg-main);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(30, 136, 229, 0.03) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(46, 164, 79, 0.02) 0px, transparent 50%);
+  color: var(--color-text-main);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Premium Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg-main);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 10px;
+  transition: var(--transition-smooth);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-active);
+}
+
+/* Page Layout Shell */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Card Improvements (Enterprise Grade) */
+.ant-card {
+  background-color: var(--color-bg-card) !important;
+  border: 1px solid var(--color-border) !important;
+  box-shadow: var(--shadow-main) !important;
+  border-radius: 10px !important;
+  backdrop-filter: blur(16px);
+  transition: var(--transition-smooth) !important;
+}
+
+/* Card Hover Lifts & border glow */
+.ant-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-border-active) !important;
+  box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.8), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.05),
+              0 0 16px rgba(30, 136, 229, 0.08) !important;
+}
+
+.ant-card-head {
+  border-bottom: 1px solid var(--color-border) !important;
+  padding: 0 20px !important;
+}
+
+.ant-card-head-title {
+  color: var(--color-text-main) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px;
+}
+
+.ant-card-body {
+  padding: 20px !important;
+}
+
+.card-title {
+  font-size: 1.15rem;
+  font-weight: 750;
+  color: var(--color-text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 0.25px;
+}
+
+.card-subtitle {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  margin-top: 3px;
+}
+
+/* Blinking status success dot */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-status-green);
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 0 0 var(--color-status-green-glow);
+  animation: pulse-green 2.5s infinite;
+}
+
+@keyframes pulse-green {
+  0% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 var(--color-status-green-glow);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(46, 164, 79, 0);
+  }
+  100% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(46, 164, 79, 0);
+  }
+}
+
+/* Audio Waveform visualizer */
+.waveform-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 48px;
+  margin: 16px 0;
+  padding: 0 12px;
+  background-color: rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.wave-bar {
+  width: 3px;
+  height: 6px;
+  background-color: var(--color-border-active);
+  border-radius: 1.5px;
+  transition: height 0.15s ease-in-out, background-color 0.25s ease;
+}
+
+.wave-bar.active {
+  background-color: var(--color-primary);
+  animation: bounce-wave 1.2s ease-in-out infinite alternate;
+}
+
+.wave-bar.active:nth-child(2n) { animation-delay: 0.1s; animation-duration: 0.9s; }
+.wave-bar.active:nth-child(3n) { animation-delay: 0.25s; animation-duration: 1.4s; }
+.wave-bar.active:nth-child(4n) { animation-delay: 0.05s; animation-duration: 0.7s; }
+.wave-bar.active:nth-child(5n) { animation-delay: 0.35s; animation-duration: 1.1s; }
+
+@keyframes bounce-wave {
+  0% { height: 6px; }
+  100% { height: 42px; }
+}
+
+/* Layout Grid System */
+.workspace-layout {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  overflow: hidden;
+}
+
+.main-workspace-wrapper {
+  flex: 1;
+  padding: 24px;
+  max-width: 1000px;
+  overflow-y: auto;
+}
+
+.status-panel-wrapper {
+  width: 330px;
+  padding: 24px 24px 24px 0;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1200px) {
+  .workspace-layout {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  
+  .main-workspace-wrapper {
+    overflow-y: visible;
+    max-width: 100%;
+    padding: 20px;
+  }
+  
+  .status-panel-wrapper {
+    width: 100%;
+    padding: 0 20px 20px 20px;
+  }
+}
+
+/* Button enhancements */
+.ant-btn {
+  font-weight: 600 !important;
+  letter-spacing: 0.25px;
+  transition: var(--transition-smooth) !important;
+}
+
+.ant-btn-primary {
+  box-shadow: 0 4px 10px rgba(30, 136, 229, 0.25) !important;
+}
+
+.ant-btn-primary:hover:not(:disabled) {
+  box-shadow: 0 4px 14px rgba(30, 136, 229, 0.4) !important;
+  transform: translateY(-1px);
+}
+
+.ant-btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Ripple Button Effect */
+.btn-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-ripple::after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+  background-repeat: no-repeat;
+  background-position: 50%;
+  transform: scale(10, 10);
+  opacity: 0;
+  transition: transform .5s, opacity 1s;
+}
+
+.btn-ripple:active::after {
+  transform: scale(0, 0);
+  opacity: .2;
+  transition: 0s;
+}

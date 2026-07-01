@@ -1,0 +1,105 @@
+.card {
+  border-radius: 10px !important;
+}
+
+.intro {
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.divider {
+  border-color: var(--color-border) !important;
+  margin: 20px 0 !important;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin-bottom: 12px;
+}
+
+.icon {
+  color: var(--color-primary);
+  font-size: 18px;
+}
+
+.descriptions {
+  margin-top: 14px;
+}
+
+.descriptions :global(.ant-descriptions-item-label) {
+  background-color: rgba(255, 255, 255, 0.01) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text-secondary) !important;
+}
+
+.descriptions :global(.ant-descriptions-item-content) {
+  background-color: var(--color-bg-card) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text-main) !important;
+}
+
+.helpText {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 16px;
+}
+
+.collapse {
+  background-color: transparent !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+.collapse :global(.ant-collapse-item) {
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+.collapse :global(.ant-collapse-item:last-child) {
+  border-bottom: none !important;
+}
+
+.collapse :global(.ant-collapse-header) {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+  color: var(--color-text-main) !important;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.panelIcon {
+  color: var(--color-primary);
+}
+
+.panelContent {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.panelContent ol {
+  padding-left: 20px;
+  margin: 10px 0;
+}
+
+.code {
+  background-color: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--color-border);
+  padding: 10px 14px;
+  border-radius: 6px;
+  color: var(--color-primary);
+  font-family: monospace;
+  font-size: 0.8rem;
+  margin-top: 10px;
+  display: block;
+  overflow-x: auto;
+}

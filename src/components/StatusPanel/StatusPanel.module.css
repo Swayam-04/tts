@@ -1,0 +1,166 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.card {
+  margin-bottom: 0;
+}
+
+.statusGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.statusRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+}
+
+.label {
+  font-size: 0.85rem;
+  font-weight: 550;
+  color: var(--color-text-secondary);
+}
+
+.icon {
+  font-size: 13px;
+  display: inline-block;
+  margin-right: 4px;
+}
+
+.readyBadge {
+  color: var(--color-status-green);
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+.processingBadge {
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+.waitingBadge {
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+.spin {
+  animation: spin-loader 1s linear infinite;
+}
+
+@keyframes spin-loader {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.progressSection {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.progressLabel {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.progressPercent {
+  color: var(--color-text-main);
+  font-family: monospace;
+}
+
+.progressBar {
+  margin: 0 !important;
+}
+
+/* Diagnostics Card styles */
+.diagnosticsCard {
+  background-color: rgba(255, 255, 255, 0.01) !important;
+}
+
+.diagGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.diagItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.diagIcon {
+  font-size: 18px;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.diagInfo {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.diagLabel {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.diagValue {
+  font-size: 0.9rem;
+  color: var(--color-text-main);
+  font-weight: 700;
+  font-family: monospace;
+}
+
+.divider {
+  border-color: var(--color-border) !important;
+  margin: 14px 0 !important;
+}
+
+.versionList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.versionRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.versionRow code {
+  color: var(--color-primary);
+  background-color: rgba(30, 136, 229, 0.1);
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.7rem;
+}

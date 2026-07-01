@@ -1,0 +1,129 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.playerSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detailCard {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+  border-top: none !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
+
+.detailGrid {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.detailLabel {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.detailText {
+  font-size: 0.85rem;
+  color: var(--color-text-main);
+  margin-top: 4px;
+  line-height: 1.4;
+  font-style: italic;
+  max-width: 650px;
+}
+
+.metaInfo {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  font-family: monospace;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-end;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.tableCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.clearBtn {
+  background-color: transparent !important;
+  border-color: rgba(255, 77, 79, 0.3) !important;
+  color: #ff4d4f !important;
+}
+
+.clearBtn:hover {
+  background-color: rgba(255, 77, 79, 0.05) !important;
+  border-color: #ff4d4f !important;
+}
+
+.historyCard {
+  border-radius: 10px !important;
+}
+
+.timeCol {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: monospace;
+  color: var(--color-text-secondary);
+}
+
+.timeIcon {
+  color: var(--color-primary);
+}
+
+.textCol {
+  color: var(--color-text-main) !important;
+  font-size: 0.85rem;
+}
+
+.playIcon {
+  color: var(--color-status-green);
+}
+
+.row {
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.row:hover {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+}
+
+.selectedRow {
+  background-color: rgba(30, 136, 229, 0.06) !important;
+  cursor: pointer;
+}
+
+.selectedRow td {
+  border-bottom: 1px solid rgba(30, 136, 229, 0.2) !important;
+}
+
+.empty {
+  padding: 40px 0 !important;
+}
+
+@media (max-width: 768px) {
+  .detailGrid {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .metaInfo {
+    align-items: flex-start;
+    text-align: left;
+  }
+}
