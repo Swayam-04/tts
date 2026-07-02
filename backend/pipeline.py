@@ -18,8 +18,7 @@ class PipelineOrchestrator:
                 ollama_start = time.time()
                 response_text = query_ollama_model(prompt)
                 ollama_latency = time.time() - ollama_start
-                pipeline_logger.info("Ollama stage completed in %.2fs", ollama_latency)
-                print(f"Generated text: {response_text}")
+                pipeline_logger.info("Ollama stage completed in %.2fs. Generated text length: %d", ollama_latency, len(response_text))
                 
                 if not response_text or response_text.strip() == "":
                     return PipelineOrchestrator._format_error("Ollama", "Generated text is empty")
