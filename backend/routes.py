@@ -9,7 +9,9 @@ from logger import flask_logger
 
 api_bp = Blueprint("api", __name__)
 
-
+@api_bp.route("/", methods=["GET"])
+def index():
+    return "VAANI AI Flask Backend is running. API endpoints are available at /health, /diagnostics, and /generate."
 
 @api_bp.route("/health", methods=["GET"])
 def health():
