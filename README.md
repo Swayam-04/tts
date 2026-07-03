@@ -259,7 +259,14 @@ Should return:
 
 # Developed By
 
-**VAANI AI – Offline Secure Speech Intelligence Platform**
+-Swayam Barik
+-Suditi Jena
+-Supriya Priyadarsani Pradhan
+-Sriya Priyadarshani
+-Kashvi Nayak
+-Kuldeep Kiran
+-Palin Panigrahi
+-Barsha Ranee
 
 Powered by:
 - React
