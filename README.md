@@ -1,6 +1,6 @@
 # 🎙️ VAANI AI – Offline Secure Speech Intelligence Platform
 
-VAANI AI is an offline speech intelligence platform that converts coded missile information into natural English using a local LLM (Ollama) and generates speech using OmniVoice Studio.
+VAANI AI is an offline speech intelligence platform that converts coded missile information into natural English using a local LLM (Ollama) and generates speech using Chatterbox TTS.
 
 ---
 
@@ -14,14 +14,14 @@ VAANI AI is an offline speech intelligence platform that converts coded missile 
                   │
           HTTP (Port 5000)
                   │
-          Flask Backend API
+          Flask Backend API (with built-in Chatterbox TTS)
                   │
       ┌───────────┴────────────┐
-      ▼                        ▼
- Ollama LLM             OmniVoice Studio
- (Port 11434)           (Port 3900)
+      ▼                        │
+ Ollama LLM                    │
+ (Port 11434)                  │
       │                        │
-      └──────────► Audio ◄─────┘
+      └──────────► WAV Audio ◄─┘
 ```
 
 ---
@@ -31,19 +31,19 @@ VAANI AI is an offline speech intelligence platform that converts coded missile 
 ```
 VAANI-AI/
 │
-├── frontend/
-│   ├── node_modules/
-│   ├── src/
-│   ├── package.json
-│   └── vite.config.js
+├── src/               # React Frontend code
+├── package.json       # React dependencies
+├── vite.config.js     # Frontend builder
 │
 ├── backend/
 │   ├── app.py
 │   ├── requirements.txt
+│   ├── services/
+│   │   ├── chatterbox_service.py # TTS Engine
+│   │   └── ollama_service.py     # LLM Engine
 │   └── ...
 │
-├── OmniVoice-Studio/
-│
+├── start_server.bat   # Automated Master Startup Script
 └── README.md
 ```
 
@@ -64,378 +64,139 @@ Install:
 
 - Python 3.11.x
 - Node.js 22+
-- Bun
 - Git
 - Ollama
-- FFmpeg
 - Visual Studio C++ Redistributable
+
+*(Note: FFmpeg is no longer required as audio is generated as native WAV format)*
 
 ---
 
-# Install Python Packages
+# Installation
 
-Inside backend
+## 1. Install Backend Dependencies
 
-```
+Inside the `backend` folder:
+
+```cmd
 cd backend
-```
-
-Create virtual environment
-
-```
 python -m venv venv
-```
-
-Activate
-
-Windows
-
-```
 venv\Scripts\activate
-```
-
-Install
-
-```
 pip install -r requirements.txt
 ```
 
-If requirements.txt is unavailable
+If `requirements.txt` is unavailable:
 
-```
-pip install flask
-pip install flask-cors
-pip install requests
-pip install python-dotenv
+```cmd
+pip install flask flask-cors requests python-dotenv torch torchaudio chatterbox-tts
 ```
 
 ---
 
-# Install Frontend
+## 2. Install Frontend Dependencies
 
-Go to frontend
+At the root directory (where `package.json` is located):
 
-```
-cd frontend
-```
-
-Install packages
-
-```
+```cmd
 npm install
 ```
 
-or
-
-```
-bun install
-```
-
-Run
-
-```
-npm run dev
-```
-
-or
-
-```
-bun run dev
-```
-
 ---
 
-# Required Node Modules
+## 3. Install Ollama & Llama Model
 
-```
-npm install react
-npm install react-dom
-npm install react-router-dom
+Download Ollama from [ollama.com](https://ollama.com/download)
 
-npm install axios
+Verify installation:
 
-npm install antd
-
-npm install lucide-react
-
-npm install react-hot-toast
-
-npm install framer-motion
-
-npm install clsx
-
-npm install tailwindcss
-
-npm install @headlessui/react
-
-npm install @heroicons/react
-
-npm install react-icons
-```
-
-If using Vite
-
-```
-npm install vite
-npm install @vitejs/plugin-react
-```
-
----
-
-# Install Ollama
-
-Download
-
-https://ollama.com/download
-
-Verify
-
-```
+```cmd
 ollama --version
 ```
 
-Pull model
+Pull the local AI model:
 
-```
+```cmd
 ollama pull llama3.2:3b
 ```
 
-Check
+Verify it downloaded successfully:
 
-```
+```cmd
 ollama list
 ```
 
-Run manually
-
-```
-ollama run llama3.2:3b
-```
-
-API
-
-```
-http://localhost:11434
-```
-
 ---
 
-# OmniVoice Studio Setup
+# Running VAANI AI
 
-Clone
+## Automated Startup (Recommended)
 
-```
-git clone https://github.com/debpalash/OmniVoice-Studio.git
-```
+Simply run the master startup script from the root directory:
 
-Go inside
-
-```
-cd OmniVoice-Studio
+```cmd
+start_server.bat
 ```
 
-Sync
+This will automatically launch Ollama, the Flask/Chatterbox Backend, and the React Frontend in independent windows.
 
-```
-uv sync
-```
+## Manual Startup Order
 
-Run
+If you prefer to start services manually, strictly follow this order:
 
-```
-uv run uvicorn main:app --app-dir backend --host 127.0.0.1 --port 3900
-```
-
-Swagger
-
-```
-http://127.0.0.1:3900/docs
-```
-
-Health
-
-```
-http://127.0.0.1:3900/health
-```
-
----
-
-# Install FFmpeg
-
-Download
-
-https://ffmpeg.org/download.html
-
-Extract
-
-Add
-
-```
-C:\ffmpeg\bin
-```
-
-to
-
-Environment Variables → PATH
-
-Verify
-
-```
-ffmpeg -version
-```
-
----
-
-# Flask Backend
-
-Go
-
-```
-cd backend
-```
-
-Run
-
-```
-python app.py
-```
-
-Runs at
-
-```
-http://127.0.0.1:5000
-```
-
-Health
-
-```
-http://127.0.0.1:5000/health
-```
-
----
-
-# Ports
-
-| Service | Port |
-|----------|------|
-| Frontend | 5173 |
-| Flask | 5000 |
-| OmniVoice | 3900 |
-| Ollama | 11434 |
-
----
-
-# Startup Order
-
-Always start in this order
-
-### Terminal 1
-
-```
+### Terminal 1: LLM Engine
+```cmd
 ollama serve
 ```
 
----
-
-### Terminal 2
-
-```
-cd OmniVoice-Studio
-
-uv run uvicorn main:app --app-dir backend --host 127.0.0.1 --port 3900
-```
-
----
-
-### Terminal 3
-
-```
+### Terminal 2: Flask Backend (TTS & API)
+```cmd
 cd backend
-
-python app.py
+venv\Scripts\python app.py
 ```
+*(Runs at http://127.0.0.1:5000)*
 
----
-
-### Terminal 4
-
-```
-cd frontend
-
-npm install
-
+### Terminal 3: React Frontend
+```cmd
 npm run dev
 ```
-
-Open
-
-```
-http://localhost:5173
-```
+*(Runs at http://localhost:5173)*
 
 ---
 
 # Verify Services
 
 ## Ollama
-
-```
+```cmd
 curl http://localhost:11434/api/tags
 ```
 
----
-
-## OmniVoice
-
+## Flask / Chatterbox
+```cmd
+curl http://127.0.0.1:5000/health
 ```
-http://127.0.0.1:3900/health
-```
-
-Should return
-
+Should return:
 ```json
 {
-  "status":"ok"
+  "status": "ok",
+  "tts": "chatterbox"
 }
-```
-
----
-
-## Flask
-
-```
-http://127.0.0.1:5000/health
 ```
 
 ---
 
 # API Flow
 
-```
+```text
 Frontend
-
-↓
-
+   ↓
 Flask
-
-↓
-
-Ollama
-
-↓
-
-Generated English
-
-↓
-
-OmniVoice
-
-↓
-
-MP3 Audio
-
-↓
-
+   ↓
+Ollama (Generates natural English text)
+   ↓
+Chatterbox TTS (Converts chunks of text to tensors)
+   ↓
+WAV Audio (Concatenated PyTorch audio sequence)
+   ↓
 Frontend Player
 ```
 
@@ -444,105 +205,34 @@ Frontend Player
 # Common Errors
 
 ## 500 Internal Server Error
-
-Check
-
-- Flask running
-- OmniVoice running
-- Ollama running
-
----
+Check if both the Flask backend and Ollama daemon are actively running.
 
 ## Backend Offline
-
-Start Flask
-
-```
-python app.py
-```
-
----
-
-## Voice Not Found
-
-Visit
-
-```
-http://127.0.0.1:3900/docs
+Restart the Flask server using:
+```cmd
+cd backend
+venv\Scripts\python app.py
 ```
 
-Use
-
-```
-GET /v1/audio/voices
-```
-
-Choose an available voice.
-
----
-
-## No Voices Available
-
-Restart OmniVoice
-
-```
-uv sync
-
-uv run uvicorn main:app --app-dir backend --host 127.0.0.1 --port 3900
-```
-
----
-
-## Ollama Error
-
-Check
-
-```
+## Ollama Connection Refused
+Check your available models:
+```cmd
 ollama list
 ```
-
-Should contain
-
-```
-llama3.2:3b
-```
-
-If missing
-
-```
+If `llama3.2:3b` is missing, run:
+```cmd
 ollama pull llama3.2:3b
 ```
 
----
-
 ## Port Already In Use
-
-Find
-
-```
+Find the blocking process:
+```cmd
 netstat -ano | findstr :5000
 ```
-
-Kill
-
-```
+Kill it:
+```cmd
 taskkill /PID <PID> /F
 ```
-
----
-
-# Production Checklist
-
-- Python 3.11
-- Node.js 22+
-- Bun installed
-- Ollama installed
-- llama3.2:3b downloaded
-- OmniVoice running
-- Flask running
-- Frontend running
-- FFmpeg installed
-- VC++ Redistributable installed
 
 ---
 
@@ -550,10 +240,9 @@ taskkill /PID <PID> /F
 
 **VAANI AI – Offline Secure Speech Intelligence Platform**
 
-Powered by
-
+Powered by:
 - React
 - Flask
 - Ollama
-- OmniVoice Studio
+- Chatterbox TTS
 - Llama 3.2 3B
