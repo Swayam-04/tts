@@ -161,6 +161,36 @@ npm install
 
 ---
 
+# 📦 Required Node Modules (Manual Installation)
+
+If you prefer to install the frontend dependencies individually rather than using `npm install`, you can run these commands one by one:
+
+```bash
+npm install react
+npm install react-dom
+npm install react-router-dom
+
+npm install axios
+npm install antd
+npm install lucide-react
+npm install react-hot-toast
+npm install framer-motion
+npm install clsx
+npm install tailwindcss
+npm install @headlessui/react
+npm install @heroicons/react
+npm install react-icons
+```
+
+If you are setting this up from scratch with Vite:
+
+```bash
+npm install vite
+npm install @vitejs/plugin-react
+```
+
+---
+
 # 🎮 Running VAANI AI
 
 ## Easy Start (Windows Only)
