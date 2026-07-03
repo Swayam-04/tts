@@ -9,12 +9,10 @@
     "model": "llama3.2:3b",
     "timeout_seconds": 120
   },
-  "omnivoice": {
-    "url": "http://127.0.0.1:3900",
-    "voice": "alloy",
-    "engine": "omnivoice",
-    "timeout_seconds": 300,
-    "retries": 3
+  "chatterbox": {
+    "model": "ResembleAI/chatterbox",
+    "device": "cuda",
+    "sample_rate": 24000
   },
   "paths": {
     "log_dir": "logs",

@@ -16,10 +16,10 @@ from startup_manager import wait_for_services
 if __name__ == "__main__":
     print("==================================")
     print("VAANI AI Backend Starting...")
-    print(f"Using voice: {Config.OMNIVOICE_VOICE}")
+    print(f"Using TTS Model: {Config.CHATTERBOX_MODEL}")
     print("==================================")
     
     # Task 1: Startup Manager checks daemons before Flask binds
     wait_for_services()
     
-    app.run(host="127.0.0.1", port=5000, debug=True)
+    app.run(host="127.0.0.1", port=5000, debug=False)

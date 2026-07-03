@@ -18,7 +18,7 @@ class ConfigManager:
         default_config = {
             "flask": {"host": "127.0.0.1", "port": 5000, "debug": True},
             "ollama": {"url": "http://127.0.0.1:11434", "model": "llama3.2:3b", "timeout_seconds": 120},
-            "omnivoice": {"url": "http://127.0.0.1:3900", "voice": "alloy", "engine": "omnivoice", "timeout_seconds": 300, "retries": 3},
+            "chatterbox": {"model": "ResembleAI/chatterbox", "device": "cuda", "sample_rate": 24000},
             "paths": {"log_dir": "logs", "audio_dir": "static/audio"}
         }
         with open(cls._config_path, "w") as f:
@@ -55,16 +55,16 @@ class Config:
     def OLLAMA_TIMEOUT(self): return ConfigManager.get("ollama", "timeout_seconds", 120)
     
     @property
-    def OMNIVOICE_BASE_URL(self): return ConfigManager.get("omnivoice", "url", "http://127.0.0.1:3900")
+    def CHATTERBOX_MODEL(self): return ConfigManager.get("chatterbox", "model", "ResembleAI/chatterbox")
     
     @property
-    def OMNIVOICE_TIMEOUT(self): return ConfigManager.get("omnivoice", "timeout_seconds", 300)
+    def CHATTERBOX_DEVICE(self): return ConfigManager.get("chatterbox", "device", "cuda")
 
     @property
-    def OMNIVOICE_VOICE(self): return ConfigManager.get("omnivoice", "voice", "alloy")
+    def CHATTERBOX_SAMPLE_RATE(self): return ConfigManager.get("chatterbox", "sample_rate", 24000)
 
     @property
-    def OMNIVOICE_ENGINE(self): return ConfigManager.get("omnivoice", "engine", "omnivoice")
+    def CHATTERBOX_OUTPUT_DIR(self): return os.path.join(os.path.dirname(__file__), ConfigManager.get("paths", "audio_dir", "static/audio"))
 
     @property
     def LOG_DIR(self): return os.path.join(os.path.dirname(__file__), ConfigManager.get("paths", "log_dir", "logs"))

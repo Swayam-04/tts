@@ -1,7 +1,7 @@
 import time
 import sys
 from services.ollama_service import check_ollama_status, check_ollama_model
-from services.omnivoice_service import check_omnivoice_status, validate_voice_and_engine
+from services.chatterbox_service import initialize, health
 import subprocess
 from monitor import monitor
 from logger import flask_logger
@@ -41,30 +41,17 @@ def wait_for_services():
         flask_logger.error(f"Startup Failed: Model '{Config.MODEL_NAME}' is unavailable.")
         sys.exit(1)
 
-    # 3. Check OmniVoice
-    flask_logger.info("Checking OmniVoice Daemon...")
-    for i in range(max_retries):
-        if check_omnivoice_status():
-            flask_logger.info("OmniVoice is ONLINE.")
-            break
-        flask_logger.warning("OmniVoice not responding. Waiting...")
-        time.sleep(5)
-    else:
-        flask_logger.error("Startup Failed: OmniVoice Studio daemon is completely unresponsive.")
-        sys.exit(1)
-
-    # 4. Check Voices
-    flask_logger.info("Checking OmniVoice Voices...")
-    for i in range(max_retries):
-        try:
-            engine, voice = validate_voice_and_engine()
-            flask_logger.info(f"Voices ready. Engine: {engine}, Voice: {voice}")
-            break
-        except Exception as e:
-            flask_logger.warning(f"Voices not available yet ({e}). Waiting...")
-            time.sleep(5)
-    else:
-        flask_logger.error("Startup Failed: Could not fetch voice list from OmniVoice API.")
+    # 3. Initialize Chatterbox TTS
+    flask_logger.info("Initializing Chatterbox TTS...")
+    try:
+        initialize()
+        if health():
+            flask_logger.info("Chatterbox TTS initialized successfully.")
+        else:
+            flask_logger.error("Startup Failed: Chatterbox initialization failed.")
+            sys.exit(1)
+    except Exception as e:
+        flask_logger.error("Startup Failed: Chatterbox exception: %s", e)
         sys.exit(1)
     
     # 5. Start the background health monitor

@@ -2,6 +2,6 @@ class OllamaError(Exception):
     """Custom exception for Ollama API failures"""
     pass
 
-class OmniVoiceError(Exception):
-    """Custom exception for OmniVoice API failures"""
+class ChatterboxError(Exception):
+    """Custom exception for Chatterbox failures"""
     pass

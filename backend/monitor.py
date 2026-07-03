@@ -3,7 +3,6 @@ import time
 import threading
 import subprocess
 from services.ollama_service import check_ollama_status
-from services.omnivoice_service import check_omnivoice_status
 from logger import flask_logger
 
 class DaemonMonitor:
@@ -40,17 +39,6 @@ class DaemonMonitor:
             flask_logger.info("Executed Ollama auto-recovery command.")
         except Exception as e:
             flask_logger.error("Failed to execute Ollama auto-recovery: %s", str(e))
-
-    def _restart_omnivoice(self):
-        try:
-            hook_script = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "start_omnivoice.bat")
-            if os.path.exists(hook_script):
-                subprocess.Popen(f'start "VAANI AI - OmniVoice Recovery" cmd /c "{hook_script}"', shell=True)
-                flask_logger.info("Executed OmniVoice auto-recovery command.")
-            else:
-                flask_logger.error("start_omnivoice.bat not found at %s", hook_script)
-        except Exception as e:
-            flask_logger.error("Failed to execute OmniVoice auto-recovery: %s", str(e))
 
 # Global instance to be started by app.py
 monitor = DaemonMonitor()

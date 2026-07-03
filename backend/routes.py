@@ -3,7 +3,7 @@ import psutil
 from flask import Blueprint, request, jsonify
 from pipeline import PipelineOrchestrator
 from services.ollama_service import check_ollama_status
-from services.omnivoice_service import check_omnivoice_status
+from services.chatterbox_service import check_chatterbox_status, list_models
 from config import Config
 from logger import flask_logger
 
@@ -24,32 +24,24 @@ def diagnostics():
     memory_info = process.memory_info()
     
     ollama_ok = check_ollama_status()
-    omnivoice_ok = check_omnivoice_status()
+    chatterbox_ok = check_chatterbox_status()
     
-    flask_logger.info("Diagnostics requested. Ollama: %s, OmniVoice: %s", ollama_ok, omnivoice_ok)
+    flask_logger.info("Diagnostics requested. Ollama: %s, Chatterbox: %s", ollama_ok, chatterbox_ok)
     
     available_voices = []
     try:
-        import requests
-        resp = requests.get(f"{Config.OMNIVOICE_BASE_URL}/v1/audio/voices", timeout=5)
-        if resp.status_code == 200:
-            data = resp.json()
-            voices_list = data if isinstance(data, list) else data.get("voices", data.get("data", []))
-            for v in voices_list:
-                if isinstance(v, dict):
-                    vid = v.get("voice_id") or v.get("id")
-                    if vid:
-                        available_voices.append(vid)
+        if chatterbox_ok:
+            available_voices = list_models()
     except Exception as e:
-        flask_logger.error(f"Diagnostics: Failed to fetch voices: {e}")
+        flask_logger.error(f"Diagnostics: Failed to fetch chatterbox models: {e}")
         
     return jsonify({
         "flask": True,
         "ollama": ollama_ok,
-        "omnivoice": omnivoice_ok,
+        "chatterbox": chatterbox_ok,
         "current_model": Config.MODEL_NAME,
-        "current_voice": getattr(Config, 'OMNIVOICE_VOICE', 'alloy'),
-        "engine": getattr(Config, 'OMNIVOICE_ENGINE', 'omnivoice'),
+        "current_voice": getattr(Config, 'CHATTERBOX_MODEL', 'ResembleAI/chatterbox'),
+        "engine": "chatterbox",
         "available_voices": available_voices,
         "memory_mb": round(memory_info.rss / (1024 * 1024), 2)
     })

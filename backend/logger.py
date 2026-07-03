@@ -31,5 +31,5 @@ def setup_logger(name, log_file, level=logging.INFO):
 # Pre-configured loggers
 flask_logger = setup_logger('flask', 'flask.log')
 ollama_logger = setup_logger('ollama', 'ollama.log')
-omnivoice_logger = setup_logger('omnivoice', 'omnivoice.log')
+chatterbox_logger = setup_logger('chatterbox', 'chatterbox.log')
 pipeline_logger = setup_logger('pipeline', 'pipeline.log')

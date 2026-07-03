@@ -2,8 +2,8 @@ import os
 import time
 import traceback
 from services.ollama_service import query_ollama_model
-from services.omnivoice_service import generate_speech_audio
-from exceptions import OllamaError, OmniVoiceError
+from services.chatterbox_service import generate_speech_audio
+from exceptions import OllamaError, ChatterboxError
 from logger import pipeline_logger
 
 class PipelineOrchestrator:
@@ -26,16 +26,16 @@ class PipelineOrchestrator:
             except OllamaError as e:
                 return PipelineOrchestrator._format_error("Ollama", str(e))
 
-            # 2. OmniVoice Stage
+            # 2. Chatterbox Stage
             try:
                 tts_start = time.time()
                 static_audio_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "audio")
                 audio_result = generate_speech_audio(response_text, static_audio_dir)
                 audio_filename = audio_result["filename"]
                 tts_latency = time.time() - tts_start
-                pipeline_logger.info("OmniVoice stage completed in %.2fs", tts_latency)
-            except OmniVoiceError as e:
-                return PipelineOrchestrator._format_error("OmniVoice", str(e))
+                pipeline_logger.info("Chatterbox stage completed in %.2fs", tts_latency)
+            except ChatterboxError as e:
+                return PipelineOrchestrator._format_error("Chatterbox", str(e))
                 
             total_latency = time.time() - start_time
             pipeline_logger.info("Pipeline completed successfully in %.2fs", total_latency)
@@ -46,7 +46,7 @@ class PipelineOrchestrator:
                 "audio_file": f"/static/audio/{audio_filename}",
                 "latencies": {
                     "ollama": round(ollama_latency, 2),
-                    "omnivoice": round(tts_latency, 2),
+                    "chatterbox": round(tts_latency, 2),
                     "total": round(total_latency, 2)
                 }
             }
