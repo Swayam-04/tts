@@ -35,7 +35,7 @@ export default function Dashboard() {
               prefix={<FiCpu className={styles.statsIcon} />}
               valueStyle={{ color: 'var(--color-primary)', fontWeight: 'bold', fontSize: '1.4rem' }}
             />
-            <div className={styles.statsFooter}>LLM: Llama-3.2-3B (Active)</div>
+            <div className={styles.statsFooter}>LLM: Gemma 4 (Active)</div>
           </Card>
         </Col>
         <Col xs={24} sm={12} md={8}>

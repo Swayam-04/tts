@@ -9,6 +9,7 @@ from memory.memory import (
     load_preferences,
     save_preferences
 )
+from config import ConfigManager
 from logger import flask_logger
 
 chat_bp = Blueprint("chat", __name__)
@@ -119,7 +120,16 @@ def save_user_prefs():
     try:
         save_preferences(user_id, **prefs_to_save)
         flask_logger.info("Saved preferences for user %s: %s", user_id, prefs_to_save)
+        
+        # If the model was changed, update the runtime config so all future
+        # Ollama requests use the new model without restarting Flask.
+        if "preferred_model" in prefs_to_save and prefs_to_save["preferred_model"]:
+            new_model = prefs_to_save["preferred_model"]
+            ConfigManager.set("ollama", "model", new_model)
+            flask_logger.info("Runtime model switched to: %s", new_model)
+        
         return jsonify({"success": True}), 200
     except Exception as e:
         flask_logger.error("Failed to save preferences: %s", e)
         return jsonify({"success": False, "error": str(e)}), 500
+

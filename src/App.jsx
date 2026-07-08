@@ -64,7 +64,7 @@ function AppContent() {
     contextWindow: 10,
     chunkSize: 500,
     chunkOverlap: 100,
-    preferredModel: 'llama3.2:3b'
+    preferredModel: 'gemma4'
   });
 
   // Pull settings from SQLite when backend becomes online

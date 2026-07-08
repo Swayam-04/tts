@@ -31,6 +31,10 @@ def check_ollama_model() -> bool:
 def query_ollama_model(prompt: str) -> str:
     """Sends a generate request to the local Ollama instance"""
     try:
+        # Verify model is available before making the request
+        if not check_ollama_model():
+            raise OllamaError(f"{Config.MODEL_NAME} model not found. Please run: ollama pull {Config.MODEL_NAME}")
+        
         payload = {
             "model": Config.MODEL_NAME,
             "prompt": prompt,
@@ -82,6 +86,10 @@ def query_ollama_chat(messages: list) -> str:
     messages format: [{'role': 'system'/'user'/'assistant', 'content': 'text'}, ...]
     """
     try:
+        # Verify model is available before making the request
+        if not check_ollama_model():
+            raise OllamaError(f"{Config.MODEL_NAME} model not found. Please run: ollama pull {Config.MODEL_NAME}")
+        
         payload = {
             "model": Config.MODEL_NAME,
             "messages": messages,

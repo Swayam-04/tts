@@ -73,7 +73,7 @@ export default function About() {
               <li>Payload signature:
                 <pre className={styles.code}>
 {`{
-  "model": "llama3.2:3b",
+  "model": "gemma4",
   "prompt": "Process and decipher the following coded string: [user_text]",
   "stream": false
 }`}

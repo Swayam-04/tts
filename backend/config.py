@@ -17,7 +17,7 @@ class ConfigManager:
     def _create_default(cls):
         default_config = {
             "flask": {"host": "127.0.0.1", "port": 5000, "debug": True},
-            "ollama": {"url": "http://127.0.0.1:11434", "model": "llama3.2:3b", "timeout_seconds": 120},
+            "ollama": {"url": "http://127.0.0.1:11434", "model": "gemma4", "timeout_seconds": 120},
             "chatterbox": {"model": "ResembleAI/chatterbox", "device": "cuda", "sample_rate": 24000},
             "paths": {"log_dir": "logs", "audio_dir": "static/audio"}
         }
@@ -49,7 +49,7 @@ class Config:
     def OLLAMA_BASE_URL(self): return ConfigManager.get("ollama", "url", "http://127.0.0.1:11434")
     
     @property
-    def MODEL_NAME(self): return ConfigManager.get("ollama", "model", "llama3.2:3b")
+    def MODEL_NAME(self): return ConfigManager.get("ollama", "model", "gemma4")
     
     @property
     def OLLAMA_TIMEOUT(self): return ConfigManager.get("ollama", "timeout_seconds", 120)

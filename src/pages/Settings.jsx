@@ -18,9 +18,10 @@ export default function Settings({ settings, onUpdateSetting }) {
   ];
 
   const modelOptions = [
+    { value: 'gemma4', label: 'Gemma 4 (Default)' },
     { value: 'llama3.2:3b', label: 'Llama 3.2 (3B)' },
-    { value: 'gemma:2b', label: 'Gemma (2B)' },
-    { value: 'qwen:0.5b', label: 'Qwen (0.5B)' }
+    { value: 'qwen3:4b', label: 'Qwen3 (4B)' },
+    { value: 'qwen3:8b', label: 'Qwen3 (8B)' }
   ];
 
   const speedMarks = {
@@ -137,7 +138,7 @@ export default function Settings({ settings, onUpdateSetting }) {
           <div className={styles.settingItem}>
             <label className={styles.label}>Preferred LLM Model</label>
             <Select
-              value={settings.preferredModel || 'llama3.2:3b'}
+              value={settings.preferredModel || 'gemma4'}
               onChange={handleSelectChange('preferredModel')}
               options={modelOptions}
               className={styles.select}

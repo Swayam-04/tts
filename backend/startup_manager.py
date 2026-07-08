@@ -27,9 +27,11 @@ def wait_for_services():
 
     # 2. Check Model
     flask_logger.info("Checking Ollama Model...")
-    for i in range(max_retries):
+    model_loaded = False
+    for i in range(5):  # Try up to 5 times (25 seconds)
         if check_ollama_model():
-            flask_logger.info("Ollama Model LOADED.")
+            flask_logger.info(f"Ollama Model '{Config.MODEL_NAME}' is LOADED and ready.")
+            model_loaded = True
             break
         flask_logger.warning(f"Ollama model not loaded. Attempting to load {Config.MODEL_NAME}...")
         try:
@@ -37,9 +39,14 @@ def wait_for_services():
         except Exception as e:
             flask_logger.error(f"Failed to load model: {e}")
         time.sleep(5)
-    else:
-        flask_logger.error(f"Startup Failed: Model '{Config.MODEL_NAME}' is unavailable.")
-        sys.exit(1)
+    
+    if not model_loaded:
+        flask_logger.error(
+            f"WARNING: Model '{Config.MODEL_NAME}' is not installed in Ollama. "
+            f"Text generation will fail until the model is pulled. "
+            f"Run: ollama pull {Config.MODEL_NAME}"
+        )
+        # Do NOT crash — let the server start so the user can still access the UI and change models
 
     # 3. Initialize Chatterbox TTS
     flask_logger.info("Initializing Chatterbox TTS...")
