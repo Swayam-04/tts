@@ -154,6 +154,7 @@ def generate_report():
                 "success": True,
                 "generated_text": response_text,
                 "audio_file": f"/static/audio/{audio_filename}",
+                "audio_duration": audio_result.get("duration", 0.0),
                 "conversation_id": conversation_id,
                 "latencies": {
                     "ollama": round(ollama_latency, 2),

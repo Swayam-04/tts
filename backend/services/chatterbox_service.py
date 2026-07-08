@@ -122,12 +122,16 @@ def generate_speech_audio(text: str, output_dir: str) -> dict:
         filename = filename.replace(".mp3", ".wav")
         filepath = wav_path
         
-        chatterbox_logger.info("Audio saved to %s", filepath)
+        # Calculate duration of the generated audio tensor in seconds
+        duration = float(audio_tensor.shape[-1]) / sample_rate
+        
+        chatterbox_logger.info("Audio saved to %s (duration: %.2f seconds)", filepath, duration)
         
         return {
             "success": True,
             "filename": filename,
-            "filepath": filepath
+            "filepath": filepath,
+            "duration": round(duration, 2)
         }
     except Exception as e:
         chatterbox_logger.error("Failed to generate speech: %s", str(e))

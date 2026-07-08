@@ -132,7 +132,7 @@ export function usePipeline() {
       
       const combinedMetrics = {
         generatedTokens: tokenCount,
-        audioDuration: 0, // Chatterbox TTS currently bypassed per architecture plan
+        audioDuration: response?.audio_duration || 0,
         voiceSelected: settings.voice || 'Default',
         processingTime: finalTotalTime
       };

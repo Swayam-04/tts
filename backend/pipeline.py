@@ -44,6 +44,7 @@ class PipelineOrchestrator:
                 "success": True,
                 "generated_text": response_text,
                 "audio_file": f"/static/audio/{audio_filename}",
+                "audio_duration": audio_result.get("duration", 0.0),
                 "latencies": {
                     "ollama": round(ollama_latency, 2),
                     "chatterbox": round(tts_latency, 2),
