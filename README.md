@@ -27,7 +27,7 @@ VAANI is an air-gapped, offline speech intelligence platform that converts coded
  Ollama LLM                    │
  (Port 11434)                  │
       │                        │
-      └──────────► WAV Audio ◄─┘
+      └──────────► MP3 Audio ◄─┘
 ```
 
 ---
@@ -77,7 +77,7 @@ Before starting, you must install these 4 core tools on your system:
    - Windows/macOS: Download from [ollama.com/download](https://ollama.com/download)
    - Linux: `curl -fsSL https://ollama.com/install.sh | sh`
 
-*(Note: FFmpeg is NO LONGER required! Audio is generated securely as a native WAV format).*
+*(Note: FFmpeg is NO LONGER required! Audio is generated securely as a native MP3 format via lameenc).*
 
 ---
 
