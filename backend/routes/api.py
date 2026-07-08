@@ -2,7 +2,6 @@ import os
 import psutil
 import time
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, create_access_token
 from pipeline import PipelineOrchestrator
 from services.ollama_service import check_ollama_status, query_ollama_chat
 from services.chatterbox_service import check_chatterbox_status, list_models, generate_speech_audio
@@ -14,28 +13,6 @@ from logger import flask_logger
 from memory.memory import load_preferences, save_message, get_recent_context
 
 api_bp = Blueprint("api", __name__)
-
-@api_bp.route("/login", methods=["POST"])
-def login():
-    """Authenticates the user and returns a JWT access token."""
-    data = request.get_json() or {}
-    username = data.get("username")
-    password = data.get("password")
-    
-    if username == "admin" and password == "admin":
-        access_token = create_access_token(identity=username)
-        flask_logger.info("Authentication successful for user: %s", username)
-        return jsonify({
-            "success": True, 
-            "access_token": access_token,
-            "username": username
-        }), 200
-    else:
-        flask_logger.warning("Failed login attempt for user: %s", username)
-        return jsonify({
-            "success": False, 
-            "error": "Invalid username or password"
-        }), 401
 
 @api_bp.route("/", methods=["GET"])
 def index():
@@ -75,7 +52,6 @@ def diagnostics():
     })
 
 @api_bp.route("/generate", methods=["POST"])
-@jwt_required()
 def generate_report():
     """
     Receives text, forwards to conversational memory pipeline OR standard pipeline.

@@ -135,22 +135,3 @@
     display: none;
   }
 }
-
-.logoutBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #ff4d4f !important;
-  border-radius: 6px !important;
-  width: 36px !important;
-  height: 36px !important;
-  transition: var(--transition-smooth);
-}
-
-.logoutBtn:hover {
-  background-color: rgba(255, 77, 79, 0.1) !important;
-}
-
-.logoutIcon {
-  font-size: 18px;
-}

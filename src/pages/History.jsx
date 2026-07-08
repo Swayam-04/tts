@@ -6,22 +6,6 @@ import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
 import { BASE_URL } from '../config/config';
 import styles from './History.module.css';
 
-const getAuthHeaders = (headers = {}) => {
-  const token = localStorage.getItem("access_token");
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-  return headers;
-};
-
-const handleUnauthorized = (res) => {
-  if (res.status === 401) {
-    window.dispatchEvent(new Event("unauthorized"));
-    return true;
-  }
-  return false;
-};
-
 export default function History({ settings, backendOnline, onAudioGenerated }) {
   const [conversations, setConversations] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -61,10 +45,7 @@ export default function History({ settings, backendOnline, onAudioGenerated }) {
         ? `http://127.0.0.1:5000/conversations?user_id=default&search=${encodeURIComponent(searchQuery)}`
         : `http://127.0.0.1:5000/conversations?user_id=default`;
         
-      const res = await fetch(url, {
-        headers: getAuthHeaders()
-      });
-      if (handleUnauthorized(res)) return;
+      const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
         if (data.success) {
@@ -95,10 +76,9 @@ export default function History({ settings, backendOnline, onAudioGenerated }) {
     try {
       const res = await fetch("http://127.0.0.1:5000/conversations", {
         method: "POST",
-        headers: getAuthHeaders({ "Content-Type": "application/json" }),
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: `Chat ${new Date().toLocaleDateString()}`, user_id: "default" })
       });
-      if (handleUnauthorized(res)) return;
       if (res.ok) {
         const data = await res.json();
         if (data.success) {
@@ -118,10 +98,7 @@ export default function History({ settings, backendOnline, onAudioGenerated }) {
     setMessagesList([]);
     setActiveAudioUrl(null);
     try {
-      const res = await fetch(`http://127.0.0.1:5000/conversations/${conv.id}/messages`, {
-        headers: getAuthHeaders()
-      });
-      if (handleUnauthorized(res)) return;
+      const res = await fetch(`http://127.0.0.1:5000/conversations/${conv.id}/messages`);
       if (res.ok) {
         const data = await res.json();
         if (data.success) {
@@ -139,10 +116,9 @@ export default function History({ settings, backendOnline, onAudioGenerated }) {
     try {
       const res = await fetch(`http://127.0.0.1:5000/conversations/${id}`, {
         method: "PUT",
-        headers: getAuthHeaders({ "Content-Type": "application/json" }),
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: newTitle })
       });
-      if (handleUnauthorized(res)) return;
       if (res.ok) {
         const data = await res.json();
         if (data.success) {
@@ -167,10 +143,8 @@ export default function History({ settings, backendOnline, onAudioGenerated }) {
       onOk: async () => {
         try {
           const res = await fetch(`http://127.0.0.1:5000/conversations/${id}`, {
-            method: "DELETE",
-            headers: getAuthHeaders()
+            method: "DELETE"
           });
-          if (handleUnauthorized(res)) return;
           if (res.ok) {
             const data = await res.json();
             if (data.success) {
@@ -210,7 +184,7 @@ export default function History({ settings, backendOnline, onAudioGenerated }) {
       setProgress(60);
       const res = await fetch("http://127.0.0.1:5000/generate", {
         method: "POST",
-        headers: getAuthHeaders({ "Content-Type": "application/json" }),
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           text: userText,
           conversation_id: activeConv.id,
@@ -219,17 +193,13 @@ export default function History({ settings, backendOnline, onAudioGenerated }) {
       });
 
       setProgress(90);
-      if (handleUnauthorized(res)) return;
       if (res.ok) {
         const data = await res.json();
         if (data.success) {
           setProgress(100);
           
           // Re-fetch message history to get real DB record with assistant response
-          const historyRes = await fetch(`http://127.0.0.1:5000/conversations/${activeConv.id}/messages`, {
-            headers: getAuthHeaders()
-          });
-          if (handleUnauthorized(historyRes)) return;
+          const historyRes = await fetch(`http://127.0.0.1:5000/conversations/${activeConv.id}/messages`);
           if (historyRes.ok) {
             const historyData = await historyRes.json();
             if (historyData.success) {

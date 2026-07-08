@@ -1,9 +1,9 @@
 import React from 'react';
 import { Button, Tooltip } from 'antd';
-import { FiSettings, FiShield, FiMenu, FiLogOut } from 'react-icons/fi';
+import { FiSettings, FiShield, FiMenu } from 'react-icons/fi';
 import styles from './Header.module.css';
 
-export default function Header({ onOpenSettings, collapsed, onToggleSidebar, backendOnline, onLogout }) {
+export default function Header({ onOpenSettings, collapsed, onToggleSidebar, backendOnline }) {
   return (
     <header className={styles.header}>
       <div className={styles.left}>
@@ -47,14 +47,6 @@ export default function Header({ onOpenSettings, collapsed, onToggleSidebar, bac
           onClick={onOpenSettings}
           className={styles.settingsBtn}
           title="Open Settings"
-        />
-
-        <Button 
-          type="text" 
-          icon={<FiLogOut className={styles.logoutIcon} />} 
-          onClick={onLogout}
-          className={styles.logoutBtn}
-          title="Logout"
         />
       </div>
     </header>

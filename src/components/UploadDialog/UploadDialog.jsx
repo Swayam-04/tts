@@ -26,26 +26,13 @@ export default function UploadDialog({ visible, onClose, onUploadSuccess }) {
     }, 300);
 
     try {
-      const token = localStorage.getItem("access_token");
-      const headers = {};
-      if (token) {
-        headers["Authorization"] = `Bearer ${token}`;
-      }
-
       const response = await fetch("http://127.0.0.1:5000/upload", {
         method: "POST",
-        headers: headers,
         body: formData,
       });
 
       clearInterval(timer);
       setProgress(100);
-
-      if (response.status === 401) {
-        window.dispatchEvent(new Event("unauthorized"));
-        message.error("Session expired. Please login again.");
-        return;
-      }
 
       const json = await response.json();
       if (response.ok && json.success) {

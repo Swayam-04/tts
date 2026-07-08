@@ -1,5 +1,4 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required
 from memory.memory import (
     start_new_conversation,
     rename_conversation,
@@ -16,7 +15,6 @@ from logger import flask_logger
 chat_bp = Blueprint("chat", __name__)
 
 @chat_bp.route("/conversations", methods=["POST"])
-@jwt_required()
 def create_chat():
     """Starts a new conversation thread."""
     data = request.get_json() or {}
@@ -32,7 +30,6 @@ def create_chat():
         return jsonify({"success": False, "error": str(e)}), 500
 
 @chat_bp.route("/conversations", methods=["GET"])
-@jwt_required()
 def list_chats():
     """Lists or searches conversation threads for a user."""
     user_id = request.args.get("user_id", "default")
@@ -49,7 +46,6 @@ def list_chats():
         return jsonify({"success": False, "error": str(e)}), 500
 
 @chat_bp.route("/conversations/<int:conversation_id>", methods=["PUT"])
-@jwt_required()
 def rename_chat(conversation_id):
     """Renames an existing conversation thread."""
     data = request.get_json() or {}
@@ -67,7 +63,6 @@ def rename_chat(conversation_id):
         return jsonify({"success": False, "error": str(e)}), 500
 
 @chat_bp.route("/conversations/<int:conversation_id>", methods=["DELETE"])
-@jwt_required()
 def delete_chat(conversation_id):
     """Deletes an existing conversation thread and all its messages."""
     try:
@@ -79,7 +74,6 @@ def delete_chat(conversation_id):
         return jsonify({"success": False, "error": str(e)}), 500
 
 @chat_bp.route("/conversations/<int:conversation_id>/messages", methods=["GET"])
-@jwt_required()
 def get_chat_messages(conversation_id):
     """Loads all messages in a conversation thread."""
     try:
@@ -90,7 +84,6 @@ def get_chat_messages(conversation_id):
         return jsonify({"success": False, "error": str(e)}), 500
 
 @chat_bp.route("/preferences", methods=["GET"])
-@jwt_required()
 def get_user_prefs():
     """Loads user preferences."""
     user_id = request.args.get("user_id", "default")
@@ -102,7 +95,6 @@ def get_user_prefs():
         return jsonify({"success": False, "error": str(e)}), 500
 
 @chat_bp.route("/preferences", methods=["POST"])
-@jwt_required()
 def save_user_prefs():
     """Saves/updates user preferences."""
     data = request.get_json() or {}

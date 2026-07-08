@@ -35,17 +35,6 @@ export function parseInputToMissileData(text) {
 }
 
 /**
- * Helper to fetch local JWT authorization headers from localStorage.
- */
-function getAuthHeaders(headers = {}) {
-  const token = localStorage.getItem("access_token");
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-  return headers;
-}
-
-/**
  * Sends structured missile telemetry to the local Flask backend /generate endpoint.
  * @param {Object} data - Structured missile report details
  * @returns {Promise<Object>} Backend generated report and optional audio file
@@ -57,18 +46,13 @@ export async function generateMissileReport(data) {
   try {
     const response = await fetch(`${BASE_URL}/generate`, {
       method: 'POST',
-      headers: getAuthHeaders({
+      headers: {
         'Content-Type': 'application/json',
-      }),
+      },
       body: JSON.stringify(data),
     });
 
     console.log("[VAANI AI API] HTTP Response Status:", response.status);
-
-    if (response.status === 401) {
-      window.dispatchEvent(new Event("unauthorized"));
-      throw new Error("Session expired. Please login again.");
-    }
 
     if (!response.ok) {
       const errText = await response.text();

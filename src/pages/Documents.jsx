@@ -7,22 +7,6 @@ import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
 import { BASE_URL } from '../config/config';
 import styles from './Documents.module.css';
 
-const getAuthHeaders = (headers = {}) => {
-  const token = localStorage.getItem("access_token");
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-  return headers;
-};
-
-const handleUnauthorized = (res) => {
-  if (res.status === 401) {
-    window.dispatchEvent(new Event("unauthorized"));
-    return true;
-  }
-  return false;
-};
-
 const { Search } = Input;
 
 export default function Documents({ settings, backendOnline }) {
@@ -58,10 +42,7 @@ export default function Documents({ settings, backendOnline }) {
   const fetchDocuments = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://127.0.0.1:5000/documents", {
-        headers: getAuthHeaders()
-      });
-      if (handleUnauthorized(res)) return;
+      const res = await fetch("http://127.0.0.1:5000/documents");
       if (res.ok) {
         const data = await res.json();
         if (data.success) {
@@ -94,10 +75,9 @@ export default function Documents({ settings, backendOnline }) {
     try {
       const res = await fetch("http://127.0.0.1:5000/summarize", {
         method: "POST",
-        headers: getAuthHeaders({ "Content-Type": "application/json" }),
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ document_id: doc.id })
       });
-      if (handleUnauthorized(res)) return;
       if (res.ok) {
         const data = await res.json();
         if (data.success) {
@@ -121,13 +101,12 @@ export default function Documents({ settings, backendOnline }) {
     try {
       const res = await fetch("http://127.0.0.1:5000/ask-document", {
         method: "POST",
-        headers: getAuthHeaders({ "Content-Type": "application/json" }),
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           question: question,
           document_id: activeDoc ? activeDoc.id : null // searches specific or all
         })
       });
-      if (handleUnauthorized(res)) return;
       if (res.ok) {
         const data = await res.json();
         if (data.success) {
@@ -152,13 +131,12 @@ export default function Documents({ settings, backendOnline }) {
     try {
       const res = await fetch("http://127.0.0.1:5000/read-document", {
         method: "POST",
-        headers: getAuthHeaders({ "Content-Type": "application/json" }),
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           document_id: doc.id,
           read_type: "full"
         })
       });
-      if (handleUnauthorized(res)) return;
       if (res.ok) {
         const data = await res.json();
         if (data.success && data.audio_file) {
@@ -192,10 +170,8 @@ export default function Documents({ settings, backendOnline }) {
       onOk: async () => {
         try {
           const res = await fetch(`http://127.0.0.1:5000/documents/${doc.id}`, {
-            method: "DELETE",
-            headers: getAuthHeaders()
+            method: "DELETE"
           });
-          if (handleUnauthorized(res)) return;
           if (res.ok) {
             const data = await res.json();
             if (data.success) {

@@ -1,6 +1,5 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager
 from routes import api_bp, chat_bp, documents_bp
 from config import Config
 from memory.memory import db_init
@@ -8,22 +7,6 @@ from memory.memory import db_init
 app = Flask(__name__, static_folder="static")
 app.config.from_object(Config)
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10MB upload limit
-app.config["JWT_SECRET_KEY"] = "vaani-ai-secure-token-secret-key-offline"
-
-# Initialize JWT Manager
-jwt = JWTManager(app)
-
-@jwt.unauthorized_loader
-def unauthorized_response(callback):
-    return jsonify({"success": False, "error": "Missing Authorization Header", "status": 401}), 401
-
-@jwt.expired_token_loader
-def expired_token_response(jwt_header, jwt_payload):
-    return jsonify({"success": False, "error": "Token has expired", "status": 401}), 401
-
-@jwt.invalid_token_loader
-def invalid_token_response(callback):
-    return jsonify({"success": False, "error": "Invalid token", "status": 422}), 422
 
 # Enable CORS for the React frontend
 CORS(app, resources={r"/*": {"origins": "*"}})
