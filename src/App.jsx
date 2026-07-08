@@ -10,6 +10,8 @@ import Generator from './pages/Generator';
 import AudioOutput from './pages/AudioOutput';
 import Settings from './pages/Settings';
 import About from './pages/About';
+import History from './pages/History';
+import Documents from './pages/Documents';
 import { usePipeline } from './hooks/usePipeline';
 
 const { Content } = Layout;
@@ -50,21 +52,77 @@ function AppContent() {
   // Instantiating Pipeline Orchestration Hook
   const pipeline = usePipeline();
 
-  // System Configurations
+  // System Configurations with Memory & RAG additions
   const [settings, setSettings] = useState({
     voice: 'default',
     language: 'en',
     speed: 1.0,
     volume: 80,
     autoPlay: true,
-    darkTheme: true
+    darkTheme: true,
+    memoryEnabled: true,
+    contextWindow: 10,
+    chunkSize: 500,
+    chunkOverlap: 100,
+    preferredModel: 'llama3.2:3b'
   });
 
+  // Pull settings from SQLite when backend becomes online
+  useEffect(() => {
+    if (!backendOnline) return;
+    const fetchPrefs = async () => {
+      try {
+        const res = await fetch("http://127.0.0.1:5000/preferences?user_id=default");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.preferences) {
+            const p = data.preferences;
+            setSettings(prev => ({
+              ...prev,
+              voice: p.preferred_voice || prev.voice,
+              language: p.language || prev.language,
+              speed: p.speech_speed || prev.speed,
+              memoryEnabled: p.memory_enabled === 1,
+              contextWindow: p.context_window || prev.contextWindow,
+              chunkSize: p.chunk_size || prev.chunkSize,
+              chunkOverlap: p.chunk_overlap || prev.chunkOverlap,
+              preferredModel: p.preferred_model || prev.preferredModel
+            }));
+          }
+        }
+      } catch (err) {
+        console.error("Preferences load failed:", err);
+      }
+    };
+    fetchPrefs();
+  }, [backendOnline]);
+
   const handleUpdateSetting = (key, value) => {
-    setSettings((prev) => ({
-      ...prev,
-      [key]: value
-    }));
+    setSettings((prev) => {
+      const updated = { ...prev, [key]: value };
+      
+      // Save updated preferences to local SQLite db
+      if (backendOnline) {
+        const payload = {
+          user_id: "default",
+          preferred_voice: updated.voice,
+          language: updated.language,
+          speech_speed: updated.speed,
+          theme: updated.darkTheme ? 'dark' : 'light',
+          memory_enabled: updated.memoryEnabled ? 1 : 0,
+          context_window: updated.contextWindow,
+          chunk_size: updated.chunkSize,
+          chunk_overlap: updated.chunkOverlap,
+          preferred_model: updated.preferredModel
+        };
+        fetch("http://127.0.0.1:5000/preferences", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        }).catch(err => console.error("Failed to sync preferences:", err));
+      }
+      return updated;
+    });
   };
 
   const handleAudioGenerated = (clip) => {
@@ -104,6 +162,14 @@ function AppContent() {
               <Route 
                 path="/audio" 
                 element={<AudioOutput settings={settings} key={historyTrigger} />} 
+              />
+              <Route 
+                path="/history" 
+                element={<History settings={settings} backendOnline={backendOnline} onAudioGenerated={handleAudioGenerated} />} 
+              />
+              <Route 
+                path="/documents" 
+                element={<Documents settings={settings} backendOnline={backendOnline} />} 
               />
               <Route 
                 path="/settings" 

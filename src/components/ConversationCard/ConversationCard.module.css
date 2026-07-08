@@ -1,0 +1,92 @@
+.cardWrapper {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  background-color: #0e1626;
+  border: 1px solid #162238;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  gap: 12px;
+}
+
+.cardWrapper:hover {
+  border-color: #1e88e5;
+  background-color: rgba(30, 136, 229, 0.02);
+}
+
+.activeCard {
+  border-color: #1e88e5;
+  background-color: rgba(30, 136, 229, 0.06);
+}
+
+.iconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.chatIcon {
+  font-size: 20px;
+  color: #1e88e5;
+}
+
+.body {
+  flex-grow: 1;
+  min-width: 0; /* truncate text in flex child */
+}
+
+.titleRow {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #f0f6fc;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.timestamp {
+  font-size: 10px;
+  color: #8b949e;
+  margin-top: 2px;
+}
+
+.editRow {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.renameInput {
+  background: #090d16;
+  color: #f0f6fc;
+  border: 1px solid #1e88e5;
+  font-size: 13px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  height: 24px;
+}
+
+.actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  flex-shrink: 0;
+}
+
+.cardWrapper:hover .actions {
+  opacity: 1;
+}
+
+.actionIcon {
+  font-size: 13px;
+}

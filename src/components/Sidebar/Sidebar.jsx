@@ -1,7 +1,7 @@
 import React from 'react';
 import { Layout, Menu } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FiHome, FiEdit, FiVolume2, FiSettings, FiInfo } from 'react-icons/fi';
+import { FiHome, FiEdit, FiVolume2, FiSettings, FiInfo, FiMessageSquare, FiFileText } from 'react-icons/fi';
 import styles from './Sidebar.module.css';
 
 const { Sider } = Layout;
@@ -20,6 +20,16 @@ export default function Sidebar({ collapsed, onCollapse }) {
       key: '/generator',
       icon: <FiEdit className={styles.icon} />,
       label: 'Text Generator',
+    },
+    {
+      key: '/history',
+      icon: <FiMessageSquare className={styles.icon} />,
+      label: 'Chat History',
+    },
+    {
+      key: '/documents',
+      icon: <FiFileText className={styles.icon} />,
+      label: 'Documents',
     },
     {
       key: '/audio',

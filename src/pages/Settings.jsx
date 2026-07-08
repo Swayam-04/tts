@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, Select, Slider, Switch, Divider, Row, Col } from 'antd';
-import { FiVolume2, FiGlobe, FiUser, FiActivity, FiShield } from 'react-icons/fi';
+import { Card, Select, Slider, Switch, Divider, Row, Col, InputNumber } from 'antd';
+import { FiVolume2, FiGlobe, FiUser, FiActivity, FiShield, FiCpu, FiHardDrive } from 'react-icons/fi';
 import styles from './Settings.module.css';
 
 export default function Settings({ settings, onUpdateSetting }) {
@@ -15,6 +15,12 @@ export default function Settings({ settings, onUpdateSetting }) {
     { value: 'en', label: 'English (General)' },
     { value: 'hi', label: 'Hindi (हिंदी)' },
     { value: 'or', label: 'Odia (ଓଡ଼ିଆ)' }
+  ];
+
+  const modelOptions = [
+    { value: 'llama3.2:3b', label: 'Llama 3.2 (3B)' },
+    { value: 'gemma:2b', label: 'Gemma (2B)' },
+    { value: 'qwen:0.5b', label: 'Qwen (0.5B)' }
   ];
 
   const speedMarks = {
@@ -34,6 +40,10 @@ export default function Settings({ settings, onUpdateSetting }) {
 
   const handleToggleChange = (key) => (checked) => {
     onUpdateSetting(key, checked);
+  };
+
+  const handleNumberChange = (key) => (value) => {
+    onUpdateSetting(key, value);
   };
 
   return (
@@ -68,7 +78,7 @@ export default function Settings({ settings, onUpdateSetting }) {
 
           <div className={styles.settingItem}>
             <label className={styles.label}>
-              <FiGlobe className={styles.itemIcon} /> Output Language Language
+              <FiGlobe className={styles.itemIcon} /> Output Language
             </label>
             <Select
               value={settings.language}
@@ -109,6 +119,84 @@ export default function Settings({ settings, onUpdateSetting }) {
               onChange={handleSliderChange('volume')}
               className={styles.slider}
               tooltip={{ formatter: (val) => `${val}%` }}
+            />
+          </div>
+        </Col>
+      </Row>
+
+      <Divider className={styles.divider} />
+
+      {/* AI Memory & Model Configurations */}
+      <Row gutter={[24, 24]}>
+        <Col xs={24} md={12}>
+          <div className={styles.sectionHeader}>
+            <FiCpu className={styles.sectionIcon} />
+            <span>AI Model & Conversation Memory</span>
+          </div>
+
+          <div className={styles.settingItem}>
+            <label className={styles.label}>Preferred LLM Model</label>
+            <Select
+              value={settings.preferredModel || 'llama3.2:3b'}
+              onChange={handleSelectChange('preferredModel')}
+              options={modelOptions}
+              className={styles.select}
+            />
+          </div>
+
+          <div className={styles.toggleRow} style={{ marginTop: '20px' }}>
+            <div>
+              <span className={styles.toggleLabel}>Enable AI Memory</span>
+              <div className={styles.toggleDesc}>Retain conversation context across user prompts.</div>
+            </div>
+            <Switch
+              checked={settings.memoryEnabled}
+              onChange={handleToggleChange('memoryEnabled')}
+            />
+          </div>
+
+          {settings.memoryEnabled && (
+            <div className={styles.settingItem} style={{ marginTop: '20px' }}>
+              <label className={styles.label}>Context Window Size (Messages)</label>
+              <InputNumber
+                min={2}
+                max={50}
+                value={settings.contextWindow || 10}
+                onChange={handleNumberChange('contextWindow')}
+                style={{ width: '100%', background: '#0e1626', color: '#f0f6fc', border: '1px solid #162238' }}
+              />
+            </div>
+          )}
+        </Col>
+
+        {/* Document Parsing (RAG) Parameters */}
+        <Col xs={24} md={12}>
+          <div className={styles.sectionHeader}>
+            <FiHardDrive className={styles.sectionIcon} />
+            <span>RAG Document Extraction Settings</span>
+          </div>
+
+          <div className={styles.settingItem}>
+            <label className={styles.label}>Text Chunk Size (Characters)</label>
+            <InputNumber
+              min={100}
+              max={2000}
+              step={50}
+              value={settings.chunkSize || 500}
+              onChange={handleNumberChange('chunkSize')}
+              style={{ width: '100%', background: '#0e1626', color: '#f0f6fc', border: '1px solid #162238' }}
+            />
+          </div>
+
+          <div className={styles.settingItem} style={{ marginTop: '20px' }}>
+            <label className={styles.label}>Chunk Overlap (Characters)</label>
+            <InputNumber
+              min={10}
+              max={500}
+              step={10}
+              value={settings.chunkOverlap || 100}
+              onChange={handleNumberChange('chunkOverlap')}
+              style={{ width: '100%', background: '#0e1626', color: '#f0f6fc', border: '1px solid #162238' }}
             />
           </div>
         </Col>

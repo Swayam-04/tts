@@ -1,0 +1,57 @@
+.card {
+  background-color: #0e1626;
+  border: 1px solid #162238;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: #1e88e5;
+  box-shadow: 0 4px 12px rgba(30, 136, 229, 0.15);
+  transform: translateY(-2px);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.docIcon {
+  font-size: 32px;
+  color: #1e88e5;
+  flex-shrink: 0;
+}
+
+.titleContainer {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.filename {
+  font-size: 15px;
+  font-weight: 600;
+  color: #f0f6fc;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timestamp {
+  font-size: 11px;
+  color: #8b949e;
+  margin-top: 2px;
+}
+
+.tags {
+  display: flex;
+  gap: 6px;
+}

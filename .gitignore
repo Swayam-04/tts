@@ -30,3 +30,6 @@ backend/backend.log
 backend/static/audio/*.mp3
 backend/static/audio/*.wav
 *.exe
+backend/instance/
+backend/uploads/
+
