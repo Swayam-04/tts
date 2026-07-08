@@ -11,7 +11,7 @@
 }
 
 .detailCard {
-  background-color: rgba(255, 255, 255, 0.02) !important;
+  background-color: rgba(0, 0, 0, 0.15) !important;
   border-top: none !important;
   border-top-left-radius: 0 !important;
   border-top-right-radius: 0 !important;
@@ -58,19 +58,35 @@
   width: 100%;
 }
 
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.headerIcon {
+  color: var(--color-primary);
+}
+
 .clearBtn {
   background-color: transparent !important;
-  border-color: rgba(255, 77, 79, 0.3) !important;
-  color: #ff4d4f !important;
+  border-color: rgba(255, 94, 94, 0.3) !important;
+  color: var(--color-status-red) !important;
+  height: 32px !important;
+  font-size: 0.8rem !important;
+  border-radius: 6px !important;
 }
 
 .clearBtn:hover {
-  background-color: rgba(255, 77, 79, 0.05) !important;
-  border-color: #ff4d4f !important;
+  background-color: rgba(255, 94, 94, 0.05) !important;
+  border-color: var(--color-status-red) !important;
 }
 
 .historyCard {
-  border-radius: 10px !important;
+  border-radius: 12px !important;
 }
 
 .timeCol {
@@ -90,8 +106,20 @@
   font-size: 0.85rem;
 }
 
-.playIcon {
-  color: var(--color-status-green);
+.actionIconBtn {
+  background-color: transparent !important;
+  border: none !important;
+  color: var(--color-text-secondary) !important;
+  width: 28px !important;
+  height: 28px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.actionIconBtn:hover {
+  color: var(--color-text-main) !important;
 }
 
 .row {
@@ -104,12 +132,12 @@
 }
 
 .selectedRow {
-  background-color: rgba(30, 136, 229, 0.06) !important;
+  background-color: var(--color-primary-alpha) !important;
   cursor: pointer;
 }
 
 .selectedRow td {
-  border-bottom: 1px solid rgba(30, 136, 229, 0.2) !important;
+  border-bottom: 1px solid rgba(46, 139, 255, 0.2) !important;
 }
 
 .empty {

@@ -6,3 +6,4 @@ pymupdf
 pdfplumber
 python-docx
 numpy
+mutagen

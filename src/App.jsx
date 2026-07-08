@@ -208,28 +208,28 @@ export default function App() {
       theme={{
         algorithm: theme.darkAlgorithm,
         token: {
-          colorPrimary: '#1e88e5',
-          colorPrimaryHover: '#1565c0',
-          colorBgContainer: '#0e1626',
-          colorBgElevated: '#141f35',
-          colorBorder: '#162238',
-          colorText: '#f0f6fc',
-          colorTextDescription: '#8b949e',
-          colorTextHeading: '#f0f6fc',
-          borderRadius: 8,
+          colorPrimary: '#2E8BFF',
+          colorPrimaryHover: '#4ea2ff',
+          colorBgContainer: '#13233C',
+          colorBgElevated: '#183253',
+          colorBorder: 'rgba(255, 255, 255, 0.08)',
+          colorText: '#FFFFFF',
+          colorTextDescription: '#B5C4D8',
+          colorTextHeading: '#FFFFFF',
+          borderRadius: 10,
         },
         components: {
           Card: {
-            headerBg: '#061830',
+            headerBg: 'rgba(255, 255, 255, 0.01)',
           },
           Progress: {
             remainingColor: 'rgba(255, 255, 255, 0.05)',
           },
           Slider: {
-            trackBg: '#1e88e5',
-            trackHoverBg: '#1e88e5',
-            handleColor: '#1e88e5',
-            handleActiveColor: '#1e88e5',
+            trackBg: '#2E8BFF',
+            trackHoverBg: '#2E8BFF',
+            handleColor: '#2E8BFF',
+            handleActiveColor: '#2E8BFF',
           },
         },
       }}

@@ -238,49 +238,111 @@ def ask_document():
         return jsonify({"success": False, "error": str(e)}), 500
 
 @documents_bp.route("/read-document", methods=["POST"])
+@documents_bp.route("/documents/read", methods=["POST"])
 def read_document():
-    """Synthesizes text content from a document into a local audio file."""
+    """Synthesizes text content from a document or raw text into a local audio file."""
     data = request.get_json() or {}
     doc_id = data.get("document_id")
-    read_type = data.get("read_type", "full") # full, pages, paragraph, text
+    read_type = data.get("read_type", "full" if doc_id else "text")
+    raw_text = data.get("text", "")
     
-    if not doc_id:
-        return jsonify({"success": False, "error": "document_id is required"}), 400
+    # Check for empty input before calling Chatterbox
+    if not doc_id and (not raw_text or len(raw_text.strip()) == 0):
+        return jsonify({"success": False, "error": "No readable text found."}), 400
         
     try:
         text_to_read = ""
+        doc_type = "raw_text"
+        filename = "direct_synthesis"
         
-        with get_db() as conn:
-            if read_type == "full":
-                rows = conn.execute("SELECT content FROM document_chunks WHERE document_id = ? ORDER BY id ASC", (doc_id,)).fetchall()
-                text_to_read = " ".join([r["content"] for r in rows])
-            elif read_type == "pages":
-                pages = data.get("pages", [1]) # page numbers
-                placeholders = ",".join(["?"] * len(pages))
-                query = f"SELECT content FROM document_chunks WHERE document_id = ? AND page IN ({placeholders}) ORDER BY id ASC"
-                params = [doc_id] + list(pages)
-                rows = conn.execute(query, params).fetchall()
-                text_to_read = " ".join([r["content"] for r in rows])
-            elif read_type == "text":
-                text_to_read = data.get("text", "").strip()
-            else:
-                return jsonify({"success": False, "error": "Invalid read_type specified."}), 400
-
-        if not text_to_read:
-            return jsonify({"success": False, "error": "No text content found for the selection."}), 422
+        if doc_id:
+            with get_db() as conn:
+                doc_record = conn.execute("SELECT filename, type FROM documents WHERE id = ?", (doc_id,)).fetchone()
+                if not doc_record:
+                    return jsonify({"success": False, "error": "Document not found in database."}), 404
+                filename = doc_record["filename"]
+                doc_type = doc_record["type"]
+                
+                if read_type == "full":
+                    rows = conn.execute("SELECT content FROM document_chunks WHERE document_id = ? ORDER BY id ASC", (doc_id,)).fetchall()
+                    text_to_read = " ".join([r["content"] for r in rows])
+                elif read_type == "pages":
+                    pages = data.get("pages", [1])
+                    placeholders = ",".join(["?"] * len(pages))
+                    query = f"SELECT content FROM document_chunks WHERE document_id = ? AND page IN ({placeholders}) ORDER BY id ASC"
+                    params = [doc_id] + list(pages)
+                    rows = conn.execute(query, params).fetchall()
+                    text_to_read = " ".join([r["content"] for r in rows])
+                elif read_type == "text":
+                    text_to_read = raw_text.strip()
+                else:
+                    return jsonify({"success": False, "error": "Invalid read_type specified."}), 400
+        else:
+            text_to_read = raw_text.strip()
             
-        # Limit text length to prevent CPU/memory exhaustion (default max 3000 characters)
-        text_to_read = text_to_read[:3000]
-        
-        # Call Chatterbox TTS
+        # Verify text is not null, undefined, empty string
+        if not text_to_read or len(text_to_read.strip()) == 0:
+            return jsonify({"success": False, "error": "No readable text extracted."}), 422
+            
+        # Limit text length to prevent CPU/memory exhaustion on direct synthesis (e.g. 50,000 characters)
+        if len(text_to_read) > 50000:
+            return jsonify({"success": False, "error": "Document exceeds maximum size (50,000 characters)."}), 413
+            
+        # Call Chatterbox TTS (it will handle cleaning, chunking, and merging internally)
         static_audio_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "static", "audio")
-        audio_result = generate_speech_audio(text_to_read, static_audio_dir)
+        
+        # Capture generation metrics and exceptions
+        try:
+            audio_result = generate_speech_audio(text_to_read, static_audio_dir)
+        except Exception as tts_err:
+            flask_logger.exception("Chatterbox TTS call failed:")
+            err_msg = str(tts_err)
+            if "Chatterbox returned an error" in err_msg:
+                return jsonify({"success": False, "error": "Chatterbox returned an error."}), 502
+            if "Failed to merge audio" in err_msg:
+                return jsonify({"success": False, "error": "Failed to merge audio."}), 502
+            return jsonify({"success": False, "error": err_msg}), 500
+            
         audio_filename = audio_result["filename"]
+        audio_url = f"/static/audio/{audio_filename}"
+        
+        # Save to database audio_logs
+        try:
+            from memory.memory import load_preferences, save_audio_log
+            prefs = load_preferences("default")
+            voice = prefs.get("preferred_voice", "Default")
+            speed = prefs.get("speech_speed", 1.0)
+            save_audio_log(
+                id=f"clip_{int(time.time() * 1000)}",
+                voice=voice,
+                speed=speed,
+                text=text_to_read,
+                audio_path=audio_url,
+                duration_seconds=audio_result.get("duration", 0.0)
+            )
+        except Exception as db_err:
+            flask_logger.error("Failed to save read-document audio log to SQLite: %s", db_err)
+        
+        # DEBUG LOGGING
+        flask_logger.info(
+            "[DEBUG LOG] Document ID: %s | Document Type: %s | Extracted Character Count: %d | Chunk Count: %d | Chatterbox Response: %s | Output File: %s | Generation Time: %s s",
+            doc_id or "N/A",
+            doc_type,
+            audio_result.get("character_count", 0),
+            audio_result.get("chunk_count", 0),
+            "Success (200)",
+            audio_filename,
+            audio_result.get("generation_time", 0.0)
+        )
         
         return jsonify({
             "success": True,
-            "audio_file": f"/static/audio/{audio_filename}",
-            "text_length": len(text_to_read)
+            "audio_file": audio_url,
+            "audio_url": audio_url,
+            "text": text_to_read,
+            "text_length": audio_result.get("character_count", 0),
+            "duration": audio_result.get("duration", 0.0),
+            "generation_time": audio_result.get("generation_time", 0.0)
         }), 200
         
     except Exception as e:

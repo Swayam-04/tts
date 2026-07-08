@@ -92,6 +92,25 @@ def db_init():
             FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE CASCADE
         );
         """)
+        
+        # 6. Audio Logs Table (Session Audio Logs)
+        conn.execute("""
+        CREATE TABLE IF NOT EXISTS audio_logs (
+            id TEXT PRIMARY KEY,
+            timestamp TEXT NOT NULL,
+            voice TEXT,
+            speed REAL,
+            text TEXT,
+            audio_path TEXT,
+            duration_seconds REAL,
+            response_time REAL
+        );
+        """)
+        # Migrate: add response_time column if missing (for existing databases)
+        try:
+            conn.execute("ALTER TABLE audio_logs ADD COLUMN response_time REAL")
+        except Exception:
+            pass  # Column already exists
     memory_logger.info("Database initialization complete.")
 
 # --- CONVERSATION HELPERS ---
@@ -197,3 +216,54 @@ def save_preferences(user_id="default", **kwargs):
     with get_db() as conn:
         conn.execute(query, tuple(values))
         return True
+
+# --- AUDIO LOGS HELPERS ---
+
+def save_audio_log(id, voice, speed, text, audio_path, duration_seconds, response_time=0.0, timestamp=None):
+    from datetime import datetime
+    if not timestamp:
+        timestamp = datetime.now().strftime('%I:%M:%S %p') # e.g. '11:42:15 PM'
+    with get_db() as conn:
+        conn.execute(
+            """
+            INSERT OR REPLACE INTO audio_logs (id, timestamp, voice, speed, text, audio_path, duration_seconds, response_time)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (id, timestamp, voice, speed, text, audio_path, duration_seconds, response_time)
+        )
+    return True
+
+def get_audio_logs():
+    with get_db() as conn:
+        rows = conn.execute(
+            "SELECT id, timestamp, voice, speed, text, audio_path, duration_seconds, response_time FROM audio_logs ORDER BY timestamp DESC"
+        ).fetchall()
+        logs = [dict(row) for row in rows]
+        
+        # Scan and update duration if missing/0 for existing MP3 files
+        updated_any = False
+        for log in logs:
+            if not log.get("duration_seconds") or log["duration_seconds"] == 0.0:
+                audio_path = log["audio_path"]
+                if audio_path:
+                    # Convert static audio URL to local file path
+                    if audio_path.startswith("/static/"):
+                        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                        local_path = os.path.join(base_dir, audio_path.lstrip("/"))
+                        if os.path.exists(local_path):
+                            try:
+                                from mutagen.mp3 import MP3
+                                audio = MP3(local_path)
+                                duration = round(audio.info.length, 2)
+                                log["duration_seconds"] = duration
+                                conn.execute("UPDATE audio_logs SET duration_seconds = ? WHERE id = ?", (duration, log["id"]))
+                                updated_any = True
+                                memory_logger.info("Automatically updated missing duration for audio log %s to %.2fs", log["id"], duration)
+                            except Exception as e:
+                                memory_logger.error("Failed to read duration for old audio file %s: %s", local_path, e)
+        return logs
+
+def clear_audio_logs():
+    with get_db() as conn:
+        conn.execute("DELETE FROM audio_logs")
+    return True

@@ -1,26 +1,23 @@
 .card {
-  background-color: #0e1626;
-  border: 1px solid #162238;
-  border-radius: 12px;
-  margin-bottom: 16px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.14);
+  background-color: var(--color-bg-card) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 12px !important;
+  transition: var(--transition-smooth) !important;
+  box-shadow: var(--shadow-main) !important;
 }
 
 .card :global(.ant-card-body) {
-  padding: 16px !important;
+  padding: 18px !important;
 }
 
 .card:hover {
-  border-color: #1e88e5;
-  box-shadow: 0 10px 20px -5px rgba(30, 136, 229, 0.2), 0 8px 16px -8px rgba(30, 136, 229, 0.2);
-  transform: translateY(-2px);
+  border-color: var(--color-primary) !important;
+  box-shadow: var(--shadow-main), var(--shadow-glow) !important;
 }
 
 .activeCard {
-  border-color: #1e88e5;
-  background-color: #111b2e;
-  box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.3);
+  border-color: var(--color-primary) !important;
+  background-color: var(--color-primary-alpha) !important;
 }
 
 .content {
@@ -36,8 +33,7 @@
 }
 
 .docIcon {
-  font-size: 36px;
-  color: #1e88e5;
+  color: var(--color-primary);
   flex-shrink: 0;
 }
 
@@ -49,9 +45,9 @@
 }
 
 .filename {
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 600;
-  color: #f0f6fc;
+  color: var(--color-text-main);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -59,7 +55,7 @@
 
 .timestamp {
   font-size: 11px;
-  color: #8b949e;
+  color: var(--color-text-secondary);
   margin-top: 2px;
 }
 
@@ -67,7 +63,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 .badge {
@@ -77,11 +73,12 @@
   font-weight: 600;
   font-size: 11px;
   margin: 0;
+  border: none;
 }
 
 .fileSize {
   font-size: 12px;
-  color: #8b949e;
+  color: var(--color-text-secondary);
 }
 
 .actionsRow {
@@ -92,43 +89,40 @@
   flex-wrap: wrap;
   margin-top: 8px;
   padding-top: 12px;
-  border-top: 1px solid #162238;
+  border-top: 1px solid var(--color-border);
 }
 
-/* Ant design button custom overrides */
 .actionBtn {
-  height: 40px !important;
-  border-radius: 10px !important;
-  font-size: 12px !important;
+  height: 38px !important;
+  border-radius: 8px !important;
+  font-size: 11.5px !important;
   font-weight: 500 !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
   gap: 6px !important;
   flex: 1;
-  min-width: 90px;
-  transition: all 0.2s ease !important;
-  background-color: transparent !important;
-  border: 1px solid #213353 !important;
-  color: #c9d1d9 !important;
+  min-width: 80px;
+  transition: var(--transition-smooth) !important;
+  background-color: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid var(--color-border) !important;
+  color: var(--color-text-secondary) !important;
 }
 
 .actionBtn:hover {
-  border-color: #1e88e5 !important;
-  color: #1e88e5 !important;
-  background-color: rgba(30, 136, 229, 0.05) !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-text-main) !important;
+  background-color: var(--color-primary-alpha) !important;
 }
 
 .deleteBtn {
-  border: 1px solid #4a151b !important;
-  color: #ff7875 !important;
+  border: 1px solid rgba(255, 94, 94, 0.2) !important;
+  color: var(--color-status-red) !important;
 }
 
 .deleteBtn:hover {
-  border-color: #ff4d4f !important;
+  border-color: var(--color-status-red) !important;
   color: #ffffff !important;
-  background-color: #ff4d4f !important;
-  box-shadow: 0 4px 12px rgba(255, 77, 79, 0.3) !important;
+  background-color: var(--color-status-red) !important;
+  box-shadow: 0 4px 12px rgba(255, 94, 94, 0.25) !important;
 }

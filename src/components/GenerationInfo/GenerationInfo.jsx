@@ -19,15 +19,23 @@ export default function GenerationInfo({ metrics }) {
     >
       <div className={styles.grid}>
         <div className={styles.item}>
-          <div className={styles.label}>Processing Time</div>
-          <div className={styles.value}>{displayValue(metrics?.processingTime, ' s')}</div>
+          <div className={styles.label}>⚡ Response Time</div>
+          <div className={styles.value}>{displayValue(metrics?.responseTime || metrics?.processingTime, ' s')}</div>
         </div>
         <div className={styles.item}>
-          <div className={styles.label}>Generated Tokens</div>
-          <div className={styles.value}>{displayValue(metrics?.generatedTokens)}</div>
+          <div className={styles.label}>🧠 Gemma 4</div>
+          <div className={styles.value}>{displayValue(metrics?.llmTime, ' s')}</div>
         </div>
         <div className={styles.item}>
-          <div className={styles.label}>Audio Duration</div>
+          <div className={styles.label}>🔊 Chatterbox</div>
+          <div className={styles.value}>{displayValue(metrics?.ttsTime, ' s')}</div>
+        </div>
+        <div className={styles.item}>
+          <div className={styles.label}>💿 Encoding</div>
+          <div className={styles.value}>{displayValue(metrics?.encodingTime, ' s')}</div>
+        </div>
+        <div className={styles.item}>
+          <div className={styles.label}>🎵 Audio Duration</div>
           <div className={styles.value}>{displayValue(metrics?.audioDuration, ' s')}</div>
         </div>
         <div className={styles.item}>

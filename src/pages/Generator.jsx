@@ -1,11 +1,23 @@
-import React, { useEffect, useRef } from 'react';
-import { Card, Input, Button, Timeline, Progress, notification, Alert } from 'antd';
-import { FiCopy, FiInfo, FiCheckCircle, FiLoader, FiClock } from 'react-icons/fi';
+import React, { useState, useEffect, useRef } from 'react';
+import { Card, Input, Button, Progress, notification, Alert, Tooltip } from 'antd';
+import { 
+  Copy, 
+  Trash2, 
+  Globe, 
+  FileAudio, 
+  Sparkles, 
+  Send,
+  Loader2,
+  CheckCircle,
+  HelpCircle,
+  Eye,
+  Circle,
+  Clock
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import TextInput from '../components/TextInput/TextInput';
 import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
 import styles from './Generator.module.css';
-
-const { TextArea } = Input;
 
 export default function Generator({
   text,
@@ -23,6 +35,8 @@ export default function Generator({
     decodedText,
     audioUrl,
     metrics,
+    stageTimers,
+    currentTask,
     generate,
     clear
   } = pipeline;
@@ -31,7 +45,7 @@ export default function Generator({
   const isGeneratingRef = useRef(isGenerating);
   const settingsRef = useRef(settings);
 
-  // Sync refs to capture fresh states in keyboard shortcut event listeners
+  // Sync refs to capture fresh states in keyboard shortcuts
   useEffect(() => {
     textRef.current = text;
     isGeneratingRef.current = isGenerating;
@@ -41,38 +55,18 @@ export default function Generator({
   // Keyboard Shortcuts Listener
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Ctrl + Enter to Generate Audio
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault();
         if (textRef.current.trim() && !isGeneratingRef.current) {
           handleGenerate();
         }
       }
-      
-      // Esc to Clear Workspace
       if (e.key === 'Escape' && !isGeneratingRef.current) {
         handleClear();
-        notification.info({
-          message: 'Workspace Cleared',
-          description: 'Text inputs and active playback caches have been cleared.',
-          placement: 'bottomRight',
-          duration: 3
-        });
-      }
-
-      // Ctrl + Shift + C to Copy Input Text
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'c') {
-        e.preventDefault();
-        if (textRef.current.trim()) {
-          handleCopyText(textRef.current, 'Input text');
-        }
       }
     };
-
     window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   const handleCopyText = (content, label = 'Text') => {
@@ -80,17 +74,16 @@ export default function Generator({
     navigator.clipboard.writeText(content)
       .then(() => {
         notification.success({
-          message: 'Secure Clipboard Copy',
-          description: `${label} copied to local sandboxed clipboard.`,
+          message: 'Secure Copy Successful',
+          description: `${label} copied to local clipboard cache.`,
           placement: 'bottomRight',
           duration: 3
         });
       })
-      .catch(err => {
-        console.error("Clipboard copy failed:", err);
+      .catch(() => {
         notification.error({
-          message: 'Clipboard Access Denied',
-          description: 'Unable to write to clipboard from isolated window.',
+          message: 'Copy Failed',
+          description: 'Local sandbox blocked clipboard write.',
           placement: 'bottomRight'
         });
       });
@@ -104,20 +97,17 @@ export default function Generator({
   const handleGenerate = async () => {
     const currentText = textRef.current;
     if (!currentText.trim() || isGeneratingRef.current) return;
-
     try {
       const result = await generate(currentText, settingsRef.current, onAudioGenerated);
-      
       if (result && result.audioUrl) {
         notification.success({
-          message: 'Speech generated successfully.',
-          description: 'The Chatterbox audio is ready to play.',
+          message: 'Speech synthesis completed',
+          description: 'The Chatterbox MP3 is ready to download or play.',
           placement: 'bottomRight',
-          duration: 5
+          duration: 4
         });
       }
     } catch (error) {
-      console.error("Pipeline execution failed:", error);
       notification.error({
         message: error.type || 'Pipeline Error',
         description: error.message || 'An unexpected pipeline error occurred.',
@@ -127,165 +117,259 @@ export default function Generator({
     }
   };
 
-  const getTimelineIcon = (state) => {
+  // Pipeline animated elements
+  const getPipelineIcon = (state) => {
     switch (state) {
       case 'completed':
-        return <FiCheckCircle className={styles.iconCompleted} />;
+        return <CheckCircle className={styles.iconCompleted} size={18} />;
       case 'active':
-        return <FiLoader className={`${styles.iconActive} ${styles.spin}`} />;
+        return <Loader2 className={`${styles.iconActive} ${styles.spin}`} size={18} />;
       default:
-        return <FiClock className={styles.iconPending} />;
+        return <Circle className={styles.iconPending} size={18} />;
     }
   };
 
-  const timelineItems = [
-    {
-      label: <span className={styles.timelineLabel}>Step 1</span>,
-      children: (
-        <div className={`${styles.timelineText} ${stepStates[0] === 'active' ? styles.pulseText : ''}`}>
-          Connecting to Local Backend...
-        </div>
-      ),
-      dot: getTimelineIcon(stepStates[0])
-    },
-    {
-      label: <span className={styles.timelineLabel}>Step 2</span>,
-      children: (
-        <div className={`${styles.timelineText} ${stepStates[1] === 'active' ? styles.pulseText : ''}`}>
-          Generating English Report...
-        </div>
-      ),
-      dot: getTimelineIcon(stepStates[1])
-    },
-    {
-      label: <span className={styles.timelineLabel}>Step 3</span>,
-      children: (
-        <div className={`${styles.timelineText} ${stepStates[2] === 'active' ? styles.pulseText : ''}`}>
-          Waiting for Response...
-        </div>
-      ),
-      dot: getTimelineIcon(stepStates[2])
-    }
-  ];
+  const formatElapsed = (sec) => {
+    if (isNaN(sec) || sec <= 0) return "00:00";
+    const mins = Math.floor(sec / 60);
+    const secs = Math.floor(sec % 60);
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
+  const charCount = text.length;
 
   return (
     <div className={styles.workspace}>
       {!backendOnline && (
         <Alert
-          message="Backend Connection Error"
-          description="Cannot connect to Flask backend. Please make sure the backend is active on http://127.0.0.1:5000."
+          message="Backend Connection Offline"
+          description="Unable to connect to Flask server. Ensure Python Flask environment is active on http://127.0.0.1:5000."
           type="error"
           showIcon
-          style={{ 
-            boxShadow: 'var(--shadow-main)', 
-            borderRadius: '6px', 
-            backgroundColor: 'rgba(245, 34, 45, 0.08)',
-            border: '1px solid rgba(245, 34, 45, 0.25)',
-            color: 'var(--color-text-main)'
-          }}
+          className={styles.alert}
         />
       )}
 
-      <TextInput
-        text={text}
-        onChangeText={setText}
-        onGenerate={handleGenerate}
-        onClear={handleClear}
-        onCopy={() => handleCopyText(text, 'Input text')}
-        isLoading={isGenerating}
-        disabled={!backendOnline}
-      />
-
-      {/* Keyboard Hotkey Helper Panel */}
-      {!isGenerating && (
-        <div className={styles.shortcutsHelper}>
-          <FiInfo className={styles.keyboardIcon} />
-          <span>
-            Hotkeys: <code>Ctrl + Enter</code> to Generate | <code>Esc</code> to Clear | <code>Ctrl + Shift + C</code> to Copy Input
-          </span>
-        </div>
-      )}
-
-      {/* Dynamic Processing Pipeline Dashboard */}
-      {isGenerating && (
-        <Card 
-          className={styles.pipelineCard}
-          title={
-            <div className={styles.pipelineHeader}>
-              <span className="card-title">Offline AI Processing Pipeline</span>
-              <span className={styles.stopwatch}>Elapsed: {elapsedTime.toFixed(2)} s</span>
-            </div>
-          }
-        >
-          <div className={styles.pipelineGrid}>
-            <div className={styles.timelineCol}>
-              <Timeline 
-                mode="left" 
-                items={timelineItems}
-                className={styles.timeline}
-              />
-            </div>
-            
-            <div className={styles.progressCol}>
-              <Progress
-                type="circle"
-                percent={progress}
-                showInfo={false}
-                strokeColor={{
-                  '0%': '#1E88E5',
-                  '100%': '#2ea44f',
-                }}
-                trailColor="rgba(255, 255, 255, 0.05)"
-                width={120}
-                className={styles.progressRing}
-              />
-              <div className={styles.progressInfo}>
-                <span className={styles.progressPercent}>{progress}%</span>
-                <span className={styles.progressLabel}>Processing</span>
-              </div>
-            </div>
+      {/* Modern Redesigned Editor Wrapper */}
+      <motion.div 
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className={styles.editorCard}
+      >
+        <div className={styles.editorHeader}>
+          <div className={styles.editorTitleRow}>
+            <Sparkles size={16} className={styles.editorIcon} />
+            <span>Isolated Speech Generator</span>
           </div>
-        </Card>
-      )}
+          
+          <div className={styles.editorMetaTags}>
+            <span className={styles.metaBadge}>
+              <Globe size={12} /> Language: {settings.language === 'hi' ? 'Hindi' : settings.language === 'or' ? 'Odia' : 'English'}
+            </span>
+            <span className={styles.metaBadge}>
+              Voice: {settings.voice || 'Default'}
+            </span>
+          </div>
+        </div>
 
-      {/* Decoded Plain Text Output (appears post Stage 1 LLM decryption) */}
-      {decodedText && !isGenerating && (
-        <Card
-          className={styles.decodedCard}
-          title={
-            <div>
-              <div className="card-title">Decoded Plain Text</div>
-              <div className="card-subtitle">Local Ollama Llama 3.2 Decrypted Output</div>
-            </div>
-          }
-          extra={
-            <Button
-              type="text"
-              icon={<FiCopy />}
-              onClick={() => handleCopyText(decodedText, 'Decoded text')}
-              className={styles.copyBtn}
-            >
-              Copy
-            </Button>
-          }
-        >
-          <TextArea
-            value={decodedText}
-            readOnly
-            autoSize={{ minRows: 3, maxRows: 6 }}
-            className={styles.decodedTextarea}
-          />
-        </Card>
-      )}
-      
-      {!isGenerating && audioUrl && (
-        <div className={styles.playerContainer}>
-          <AudioPlayer 
-            audioUrl={audioUrl}
-            autoPlay={settings.autoPlay}
+        <div className={styles.textAreaWrapper}>
+          <Input.TextArea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Type or paste classified transcript details here (e.g. military report transcripts, command summaries)..."
+            disabled={isGenerating || !backendOnline}
+            className={styles.textarea}
+            autoSize={{ minRows: 6, maxRows: 12 }}
           />
         </div>
-      )}
+
+        {/* Text editor footer toolbars */}
+        <div className={styles.editorFooter}>
+          <div className={styles.statsBrief}>
+            <span>{wordCount} Words</span>
+            <span className={styles.bulletDivider}>•</span>
+            <span>{charCount} Characters</span>
+          </div>
+
+          <div className={styles.actionsGroup}>
+            <Tooltip title="Clear Workspace (Esc)">
+              <Button
+                type="default"
+                icon={<Trash2 size={15} />}
+                onClick={handleClear}
+                disabled={isGenerating || !text.trim()}
+                className={styles.utilBtn}
+              />
+            </Tooltip>
+
+            <Tooltip title="Copy Input Text">
+              <Button
+                type="default"
+                icon={<Copy size={15} />}
+                onClick={() => handleCopyText(text, 'Input text')}
+                disabled={!text.trim()}
+                className={styles.utilBtn}
+              />
+            </Tooltip>
+
+            <Button
+              type="primary"
+              icon={isGenerating ? <Loader2 className={styles.spin} size={15} /> : <Send size={15} />}
+              onClick={handleGenerate}
+              disabled={isGenerating || !text.trim() || !backendOnline}
+              className={styles.generateBtn}
+            >
+              {isGenerating ? 'Synthesizing...' : 'Generate Speech'}
+            </Button>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Animated Process Pipeline */}
+      <AnimatePresence>
+        {(isGenerating || metrics) && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className={styles.pipelineCard}
+          >
+            <Card 
+              title={
+                <div className={styles.pipelineHeader}>
+                  <span>Live Synthesis Pipeline</span>
+                  <div className={styles.globalTimer}>
+                    <Clock size={13} className={styles.timerIcon} />
+                    <span>Processing Time: <span className={styles.timerVal}>{formatElapsed(elapsedTime)}</span></span>
+                  </div>
+                </div>
+              } 
+              className={styles.cardInner}
+            >
+              <div className={styles.pipelineSteps}>
+                {/* Stage 1: Backend Query */}
+                <div className={`${styles.step} ${stepStates[0] === 'active' ? styles.stepActive : stepStates[0] === 'completed' ? styles.stepCompleted : ''}`}>
+                  <div className={styles.stepIndicator}>
+                    {getPipelineIcon(stepStates[0])}
+                  </div>
+                  <div className={styles.stepContent}>
+                    <span className={styles.stepLabel}>Backend Query</span>
+                    <span className={styles.stepTime}>
+                      {stageTimers.query > 0 ? `${stageTimers.query.toFixed(2)}s` : 'idle'}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className={`${styles.connector} ${stepStates[0] === 'completed' ? styles.connectorCompleted : ''}`} />
+                
+                {/* Stage 2: Gemma 4 Deciphering */}
+                <div className={`${styles.step} ${stepStates[1] === 'active' ? styles.stepActive : stepStates[1] === 'completed' ? styles.stepCompleted : ''}`}>
+                  <div className={styles.stepIndicator}>
+                    {getPipelineIcon(stepStates[1])}
+                  </div>
+                  <div className={styles.stepContent}>
+                    <span className={styles.stepLabel}>Gemma 4 Deciphering</span>
+                    <span className={styles.stepTime}>
+                      {stageTimers.llm > 0 ? `${stageTimers.llm.toFixed(2)}s` : 'idle'}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className={`${styles.connector} ${stepStates[1] === 'completed' ? styles.connectorCompleted : ''}`} />
+                
+                {/* Stage 3: Chatterbox TTS */}
+                <div className={`${styles.step} ${stepStates[2] === 'active' ? styles.stepActive : stepStates[2] === 'completed' ? styles.stepCompleted : ''}`}>
+                  <div className={styles.stepIndicator}>
+                    {getPipelineIcon(stepStates[2])}
+                  </div>
+                  <div className={styles.stepContent}>
+                    <span className={styles.stepLabel}>Chatterbox TTS</span>
+                    <span className={styles.stepTime}>
+                      {stageTimers.tts > 0 ? `${stageTimers.tts.toFixed(2)}s` : 'idle'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.pipelineProgressSection}>
+                <div className={styles.progressText}>
+                  <span className={styles.currentTaskLabel}>{currentTask}</span>
+                  <span>{progress}%</span>
+                </div>
+                <Progress 
+                  percent={progress} 
+                  showInfo={false}
+                  strokeColor="#2E8BFF"
+                  trailColor="rgba(255,255,255,0.05)"
+                  className={styles.progressLine}
+                />
+              </div>
+
+              {/* Completion Summary Block */}
+              {metrics && !isGenerating && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className={styles.summaryBlock}
+                >
+                  <div className={styles.summaryTitle}>
+                    <CheckCircle className={styles.summarySuccessIcon} size={15} />
+                    <span>Generation Completed</span>
+                  </div>
+                  <div className={styles.summaryMetrics}>
+                    <div className={styles.metricItem}>
+                      <span className={styles.metricLabel}>⚡ Response Time</span>
+                      <span className={styles.metricValue}>{metrics.responseTime || metrics.processingTime} sec</span>
+                    </div>
+                    <div className={styles.metricDivider} />
+                    <div className={styles.metricItem}>
+                      <span className={styles.metricLabel}>🧠 Gemma 4</span>
+                      <span className={styles.metricValue}>{metrics.llmTime} sec</span>
+                    </div>
+                    <div className={styles.metricDivider} />
+                    <div className={styles.metricItem}>
+                      <span className={styles.metricLabel}>🔊 Chatterbox</span>
+                      <span className={styles.metricValue}>{metrics.ttsTime} sec</span>
+                    </div>
+                    <div className={styles.metricDivider} />
+                    <div className={styles.metricItem}>
+                      <span className={styles.metricLabel}>💿 MP3 Encoding</span>
+                      <span className={styles.metricValue}>{metrics.encodingTime || 0} sec</span>
+                    </div>
+                    <div className={styles.metricDivider} />
+                    <div className={styles.metricItem}>
+                      <span className={styles.metricLabel}>🎵 Audio Length</span>
+                      <span className={styles.metricValue}>{(metrics.audioDuration || 0).toFixed(2)} sec</span>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Output Audio player deck */}
+      <AnimatePresence>
+        {audioUrl && !isGenerating && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <AudioPlayer 
+              audioUrl={audioUrl}
+              autoPlay={settings.autoPlay}
+              text={decodedText || text}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

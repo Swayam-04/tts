@@ -1,7 +1,18 @@
-import React from 'react';
-import { Layout, Menu } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Layout, Menu, Progress } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FiHome, FiEdit, FiVolume2, FiSettings, FiInfo, FiMessageSquare, FiFileText } from 'react-icons/fi';
+import { 
+  LayoutDashboard, 
+  Terminal, 
+  MessageSquareCode, 
+  FolderArchive, 
+  FileAudio, 
+  Settings, 
+  HelpCircle,
+  HardDrive,
+  Cpu,
+  ShieldCheck
+} from 'lucide-react';
 import styles from './Sidebar.module.css';
 
 const { Sider } = Layout;
@@ -9,41 +20,51 @@ const { Sider } = Layout;
 export default function Sidebar({ collapsed, onCollapse }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const [storageUsed, setStorageUsed] = useState(38); // Mock active storage calculation
+  const [statusOnline, setStatusOnline] = useState(true);
+
+  // Check backend status briefly on load
+  useEffect(() => {
+    fetch("http://127.0.0.1:5000/health")
+      .then(res => res.json())
+      .then(data => setStatusOnline(data.success || data.status === 'UP'))
+      .catch(() => setStatusOnline(false));
+  }, []);
 
   const menuItems = [
     {
       key: '/',
-      icon: <FiHome className={styles.icon} />,
-      label: 'Dashboard',
+      icon: <LayoutDashboard size={18} />,
+      label: 'Security Dashboard',
     },
     {
       key: '/generator',
-      icon: <FiEdit className={styles.icon} />,
-      label: 'Text Generator',
+      icon: <Terminal size={18} />,
+      label: 'Speech Generator',
     },
     {
       key: '/history',
-      icon: <FiMessageSquare className={styles.icon} />,
-      label: 'Chat History',
+      icon: <MessageSquareCode size={18} />,
+      label: 'Secure Chats',
     },
     {
       key: '/documents',
-      icon: <FiFileText className={styles.icon} />,
-      label: 'Documents',
+      icon: <FolderArchive size={18} />,
+      label: 'Document Vault',
     },
     {
       key: '/audio',
-      icon: <FiVolume2 className={styles.icon} />,
-      label: 'Audio Output',
+      icon: <FileAudio size={18} />,
+      label: 'Audio Outputs',
     },
     {
       key: '/settings',
-      icon: <FiSettings className={styles.icon} />,
-      label: 'Settings',
+      icon: <Settings size={18} />,
+      label: 'System Parameters',
     },
     {
       key: '/about',
-      icon: <FiInfo className={styles.icon} />,
+      icon: <HelpCircle size={18} />,
       label: 'About Platform',
     },
   ];
@@ -57,20 +78,23 @@ export default function Sidebar({ collapsed, onCollapse }) {
       collapsible
       collapsed={collapsed}
       onCollapse={onCollapse}
-      width={240}
+      width={260}
       collapsedWidth={80}
       className={styles.sider}
-      trigger={null} // We will use a header button or default trigger
+      trigger={null}
     >
       <div className={styles.logoContainer}>
-        <div className={styles.logoBadge}>V</div>
+        <div className={styles.logoBadge}>
+          <ShieldCheck size={18} />
+        </div>
         {!collapsed && (
           <div className={styles.logoText}>
-            <div className={styles.logoTitle}>VAANI AI</div>
-            <div className={styles.logoSubtitle}>SECURE PLATFORM</div>
+            <div className={styles.logoTitle}>VAANI</div>
+            <div className={styles.logoSubtitle}>INTELLIGENCE ENGINE</div>
           </div>
         )}
       </div>
+
       <Menu
         theme="dark"
         mode="inline"
@@ -79,6 +103,55 @@ export default function Sidebar({ collapsed, onCollapse }) {
         onClick={handleMenuClick}
         className={styles.menu}
       />
+
+      {/* Sidebar Footer System Brief */}
+      <div className={styles.footerSection}>
+        {collapsed ? (
+          <div className={styles.collapsedFooterIcon} title="Platform Status: Active">
+            <Cpu size={16} style={{ color: statusOnline ? '#31D17B' : '#FF5E5E' }} />
+          </div>
+        ) : (
+          <div className={styles.footerInner}>
+            <div className={styles.divider} />
+            
+            {/* Storage Progress Widget */}
+            <div className={styles.footerWidget}>
+              <div className={styles.widgetHeader}>
+                <span className={styles.widgetLabel}>
+                  <HardDrive size={12} className={styles.widgetIcon} /> Storage Used
+                </span>
+                <span className={styles.widgetValue}>{storageUsed}%</span>
+              </div>
+              <Progress 
+                percent={storageUsed} 
+                size="small" 
+                showInfo={false} 
+                strokeColor="#2E8BFF"
+                trailColor="rgba(255,255,255,0.05)"
+                className={styles.widgetProgress}
+              />
+            </div>
+
+            {/* Platform spec details */}
+            <div className={styles.sysBriefGrid}>
+              <div className={styles.sysBriefItem}>
+                <span className={styles.sysBriefLabel}>Engine</span>
+                <span className={styles.sysBriefValue}>Gemma 4</span>
+              </div>
+              <div className={styles.sysBriefItem}>
+                <span className={styles.sysBriefLabel}>Version</span>
+                <span className={styles.sysBriefValue}>v1.2.0</span>
+              </div>
+              <div className={styles.sysBriefItem}>
+                <span className={styles.sysBriefLabel}>Platform</span>
+                <span className={styles.sysBriefValue} style={{ color: statusOnline ? '#31D17B' : '#FF5E5E' }}>
+                  {statusOnline ? 'Secure Link' : 'Offline'}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </Sider>
   );
 }

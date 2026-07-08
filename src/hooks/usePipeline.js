@@ -22,6 +22,10 @@ export function usePipeline() {
   const [llmStatus, setLlmStatus] = useState('Ready');
   const [ttsStatus, setTtsStatus] = useState('Ready');
   
+  // Real-time stage timers and current task string description
+  const [stageTimers, setStageTimers] = useState({ query: 0, llm: 0, tts: 0 });
+  const [currentTask, setCurrentTask] = useState('Idle');
+  
   const timerRef = useRef(null);
 
   // Clean up timers on unmount
@@ -41,6 +45,8 @@ export function usePipeline() {
     setMetrics(null);
     setLlmStatus('Ready');
     setTtsStatus('Ready');
+    setStageTimers({ query: 0, llm: 0, tts: 0 });
+    setCurrentTask('Idle');
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
@@ -68,23 +74,54 @@ export function usePipeline() {
     setDecodedText('');
     setMetrics(null);
     setStepStates(['active', 'pending', 'pending']);
+    setStageTimers({ query: 0, llm: 0, tts: 0 });
+    setCurrentTask('Receiving Prompt...');
 
-    // Start high-precision elapsed timer
+    // Start high-precision elapsed timer and simulated progress indicators
     const startTime = performance.now();
+    let currentStage = 0; // 0: query, 1: llm, 2: tts
+    let queryElapsed = 0;
+    let llmElapsed = 0;
+    let ttsElapsed = 0;
+
     timerRef.current = setInterval(() => {
       const elapsed = (performance.now() - startTime) / 1000;
-      setElapsedTime(parseFloat(elapsed.toFixed(2)));
-    }, 40);
+      setElapsedTime(elapsed);
+
+      if (currentStage === 0) {
+        queryElapsed += 0.05;
+        setStageTimers(prev => ({ ...prev, query: parseFloat(queryElapsed.toFixed(2)) }));
+        setProgress(prev => Math.min(18, prev + 2));
+        if (queryElapsed >= 0.3) {
+          currentStage = 1;
+          setStepStates(['completed', 'active', 'pending']);
+          setCurrentTask('Generating Response...');
+        }
+      } else if (currentStage === 1) {
+        llmElapsed += 0.05;
+        setStageTimers(prev => ({ ...prev, llm: parseFloat(llmElapsed.toFixed(2)) }));
+        setProgress(prev => Math.min(48, prev + 1));
+        if (llmElapsed >= 2.0) {
+          setCurrentTask('Structuring Output...');
+        }
+        if (llmElapsed >= 3.2) {
+          currentStage = 2;
+          setStepStates(['completed', 'completed', 'active']);
+          setCurrentTask('Preparing Speech...');
+        }
+      } else if (currentStage === 2) {
+        ttsElapsed += 0.05;
+        setStageTimers(prev => ({ ...prev, tts: parseFloat(ttsElapsed.toFixed(2)) }));
+        setProgress(prev => Math.min(94, prev + 0.5));
+        if (ttsElapsed >= 1.5 && ttsElapsed < 3.8) {
+          setCurrentTask('Synthesizing Voice...');
+        } else if (ttsElapsed >= 3.8) {
+          setCurrentTask('Encoding MP3...');
+        }
+      }
+    }, 50);
 
     try {
-      // Step 1: Connecting to Local Backend
-      setStepStates(['active', 'pending', 'pending']);
-      setProgress(25);
-      
-      // Step 2 & 3: Generating English Report & Waiting
-      setStepStates(['completed', 'active', 'active']);
-      setProgress(60);
-
       // Perform API call
       const response = await generateMissileReport(parsedData);
       
@@ -102,15 +139,31 @@ export function usePipeline() {
         throw new Error("Speech generation failed.");
       }
       
-      setProgress(100);
-
       // Stop elapsed stopwatch
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;
       }
 
+      const finalTotalTime = parseFloat(((performance.now() - startTime) / 1000).toFixed(2));
+      
+      // Parse exact timings from backend (use real backend values)
+      const backendResponseTime = response?.response_time || response?.latencies?.total || finalTotalTime;
+      const llmTime = response?.latencies?.ollama || 0;
+      const ttsTime = response?.latencies?.chatterbox || 0;
+      const encodingTime = response?.latencies?.encoding || 0;
+      const queryTime = parseFloat(Math.max(0.05, backendResponseTime - (llmTime + ttsTime)).toFixed(2));
+
+      setStageTimers({
+        query: queryTime,
+        llm: llmTime,
+        tts: ttsTime
+      });
+
       setStepStates(['completed', 'completed', 'completed']);
+      setProgress(100);
+      setCurrentTask('Completed');
+      setElapsedTime(finalTotalTime);
 
       // Format audio URL if present
       let generatedAudioUrl = null;
@@ -127,14 +180,18 @@ export function usePipeline() {
       setLlmStatus('Ready');
       setTtsStatus('Ready');
 
-      const finalTotalTime = parseFloat(((performance.now() - startTime) / 1000).toFixed(2));
       const tokenCount = Math.max(1, Math.ceil((response?.generated_text || "").length / 4));
       
       const combinedMetrics = {
         generatedTokens: tokenCount,
         audioDuration: response?.audio_duration || 0,
         voiceSelected: settings.voice || 'Default',
-        processingTime: finalTotalTime
+        processingTime: finalTotalTime,
+        responseTime: backendResponseTime,
+        llmTime: llmTime,
+        ttsTime: ttsTime,
+        encodingTime: encodingTime,
+        queryTime: queryTime
       };
 
       setMetrics(combinedMetrics);
@@ -156,8 +213,6 @@ export function usePipeline() {
       // Push to session history
       const history = getGenerationHistory();
       history.unshift(finalizedClip);
-      
-      // NEW: Persist to localStorage
       saveGenerationHistory();
 
       if (onAudioGenerated) {
@@ -182,6 +237,7 @@ export function usePipeline() {
       setLlmStatus('Ready');
       setTtsStatus('Ready');
       setStepStates(['pending', 'pending', 'pending']);
+      setCurrentTask('Idle');
       throw error;
     }
   }, [isGenerating]);
@@ -197,6 +253,8 @@ export function usePipeline() {
     metrics,
     llmStatus,
     ttsStatus,
+    stageTimers,
+    currentTask,
     generate,
     clear
   };

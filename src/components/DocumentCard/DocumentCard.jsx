@@ -1,11 +1,11 @@
 import React from 'react';
 import { Card, Button, Tag, Tooltip } from 'antd';
-import { FiFileText, FiTrash2, FiActivity, FiVolume2, FiHelpCircle } from 'react-icons/fi';
+import { FileText, Trash2, Activity, Volume2, HelpCircle } from 'lucide-react';
 import styles from './DocumentCard.module.css';
 
 export default function DocumentCard({ doc, onSummarize, onAsk, onRead, onDelete, isActive }) {
   const getFileIcon = (type) => {
-    return <FiFileText className={styles.docIcon} />;
+    return <FileText className={styles.docIcon} size={18} />;
   };
 
   const getFormatTagColor = (type) => {
@@ -13,9 +13,9 @@ export default function DocumentCard({ doc, onSummarize, onAsk, onRead, onDelete
       case 'pdf':
         return '#f5222d';
       case 'docx':
-        return '#1890ff';
+        return '#2E8BFF';
       default:
-        return '#722ed1';
+        return '#FFB547';
     }
   };
 
@@ -37,7 +37,7 @@ export default function DocumentCard({ doc, onSummarize, onAsk, onRead, onDelete
         
         <div className={styles.metaRow}>
           <Tag color={getFormatTagColor(doc.type)} className={styles.badge}>
-            {doc.type}
+            {doc.type.toUpperCase()}
           </Tag>
           {doc.size && <span className={styles.fileSize}>{doc.size}</span>}
         </div>
@@ -46,38 +46,41 @@ export default function DocumentCard({ doc, onSummarize, onAsk, onRead, onDelete
           <Tooltip title="Extract key insights and summaries" placement="top">
             <Button 
               type="default" 
-              icon={<FiActivity />} 
+              icon={<Activity size={13} />} 
               onClick={(e) => { e.stopPropagation(); onSummarize(doc); }}
               className={styles.actionBtn}
             >
               Summarize
             </Button>
           </Tooltip>
+          
           <Tooltip title="Ask questions about this document" placement="top">
             <Button 
               type="default" 
-              icon={<FiHelpCircle />} 
+              icon={<HelpCircle size={13} />} 
               onClick={(e) => { e.stopPropagation(); onAsk(doc); }}
               className={styles.actionBtn}
             >
               Ask Qs
             </Button>
           </Tooltip>
+          
           <Tooltip title="Read the document text aloud" placement="top">
             <Button 
               type="default" 
-              icon={<FiVolume2 />} 
+              icon={<Volume2 size={13} />} 
               onClick={(e) => { e.stopPropagation(); onRead(doc); }}
               className={styles.actionBtn}
             >
-              Read Aloud
+              Read
             </Button>
           </Tooltip>
+          
           <Tooltip title="Permanently delete from index" placement="top">
             <Button 
               type="primary"
               danger 
-              icon={<FiTrash2 />} 
+              icon={<Trash2 size={13} />} 
               onClick={(e) => { e.stopPropagation(); onDelete(doc); }}
               className={`${styles.actionBtn} ${styles.deleteBtn}`}
             >

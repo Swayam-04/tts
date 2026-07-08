@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Card, Button, Input, Space, Tooltip } from 'antd';
-import { FiMessageSquare, FiEdit2, FiCheck, FiX, FiTrash2, FiClock } from 'react-icons/fi';
+import { Button, Input, Tooltip } from 'antd';
+import { MessageSquare, Edit2, Check, X, Trash2, Clock } from 'lucide-react';
 import styles from './ConversationCard.module.css';
 
 export default function ConversationCard({ conversation, isActive, onSelect, onRename, onDelete }) {
@@ -28,9 +28,8 @@ export default function ConversationCard({ conversation, isActive, onSelect, onR
   };
 
   const formatTimestamp = (tsStr) => {
-    // SQLite timestamps look like "2026-07-08 13:00:00"
     try {
-      const d = new Date(tsStr.replace(/-/g, '/')); // browser compatibility
+      const d = new Date(tsStr.replace(/-/g, '/'));
       return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' ' + d.toLocaleDateString([], { month: 'short', day: 'numeric' });
     } catch (e) {
       return tsStr;
@@ -43,7 +42,7 @@ export default function ConversationCard({ conversation, isActive, onSelect, onR
       onClick={handleCardClick}
     >
       <div className={styles.iconContainer}>
-        <FiMessageSquare className={styles.chatIcon} />
+        <MessageSquare className={styles.chatIcon} size={16} />
       </div>
       
       <div className={styles.body}>
@@ -56,8 +55,8 @@ export default function ConversationCard({ conversation, isActive, onSelect, onR
               className={styles.renameInput}
               autoFocus
             />
-            <Button size="small" type="primary" icon={<FiCheck />} onClick={handleSaveRename} />
-            <Button size="small" icon={<FiX />} onClick={handleCancelRename} />
+            <Button size="small" type="primary" icon={<Check size={12} />} onClick={handleSaveRename} />
+            <Button size="small" icon={<X size={12} />} onClick={handleCancelRename} />
           </div>
         ) : (
           <div className={styles.titleRow}>
@@ -65,7 +64,7 @@ export default function ConversationCard({ conversation, isActive, onSelect, onR
               {conversation.title}
             </span>
             <span className={styles.timestamp}>
-              <FiClock style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+              <Clock size={11} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
               {formatTimestamp(conversation.updated_at || conversation.created_at)}
             </span>
           </div>
@@ -78,8 +77,9 @@ export default function ConversationCard({ conversation, isActive, onSelect, onR
             <Button 
               type="text" 
               size="small" 
-              icon={<FiEdit2 className={styles.actionIcon} />} 
+              icon={<Edit2 size={13} />} 
               onClick={() => setIsEditing(true)}
+              className={styles.actionBtn}
             />
           </Tooltip>
           <Tooltip title="Delete chat">
@@ -87,8 +87,9 @@ export default function ConversationCard({ conversation, isActive, onSelect, onR
               type="text" 
               size="small" 
               danger
-              icon={<FiTrash2 className={styles.actionIcon} />} 
+              icon={<Trash2 size={13} />} 
               onClick={() => onDelete(conversation.id)}
+              className={styles.actionBtn}
             />
           </Tooltip>
         </div>

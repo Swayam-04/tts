@@ -2,23 +2,23 @@
   display: flex;
   align-items: center;
   padding: 10px 12px;
-  background-color: #0e1626;
-  border: 1px solid #162238;
+  background-color: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-smooth);
   user-select: none;
   gap: 12px;
 }
 
 .cardWrapper:hover {
-  border-color: #1e88e5;
-  background-color: rgba(30, 136, 229, 0.02);
+  border-color: var(--color-primary);
+  background-color: var(--color-bg-card-hover);
 }
 
 .activeCard {
-  border-color: #1e88e5;
-  background-color: rgba(30, 136, 229, 0.06);
+  border-color: var(--color-primary) !important;
+  background-color: var(--color-primary-alpha) !important;
 }
 
 .iconContainer {
@@ -29,13 +29,12 @@
 }
 
 .chatIcon {
-  font-size: 20px;
-  color: #1e88e5;
+  color: var(--color-primary);
 }
 
 .body {
   flex-grow: 1;
-  min-width: 0; /* truncate text in flex child */
+  min-width: 0;
 }
 
 .titleRow {
@@ -45,9 +44,9 @@
 }
 
 .title {
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 500;
-  color: #f0f6fc;
+  color: var(--color-text-main);
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -55,7 +54,7 @@
 
 .timestamp {
   font-size: 10px;
-  color: #8b949e;
+  color: var(--color-text-secondary);
   margin-top: 2px;
 }
 
@@ -66,13 +65,13 @@
 }
 
 .renameInput {
-  background: #090d16;
-  color: #f0f6fc;
-  border: 1px solid #1e88e5;
-  font-size: 13px;
-  padding: 2px 6px;
-  border-radius: 4px;
-  height: 24px;
+  background: rgba(0,0,0,0.2) !important;
+  color: var(--color-text-main) !important;
+  border: 1px solid var(--color-border) !important;
+  font-size: 13px !important;
+  padding: 2px 6px !important;
+  border-radius: 6px !important;
+  height: 28px !important;
 }
 
 .actions {
@@ -87,6 +86,13 @@
   opacity: 1;
 }
 
-.actionIcon {
-  font-size: 13px;
+.actionBtn {
+  background-color: transparent !important;
+  border: none !important;
+  width: 24px !important;
+  height: 24px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }

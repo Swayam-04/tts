@@ -1,3 +1,11 @@
+import sys
+import io
+
+# Force stdout/stderr to UTF-8 to prevent crash on emojis/special characters on Windows
+if sys.platform.startswith('win'):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+
 from flask import Flask, jsonify
 from flask_cors import CORS
 from routes import api_bp, chat_bp, documents_bp

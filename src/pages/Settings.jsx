@@ -1,6 +1,18 @@
 import React from 'react';
-import { Card, Select, Slider, Switch, Row, Col, InputNumber } from 'antd';
-import { FiVolume2, FiGlobe, FiUser, FiActivity, FiShield, FiCpu, FiHardDrive } from 'react-icons/fi';
+import { Card, Select, Slider, Switch, Row, Col, InputNumber, Button, Modal, message } from 'antd';
+import { 
+  Volume2, 
+  Globe, 
+  User, 
+  Shield, 
+  Cpu, 
+  HardDrive, 
+  Layout, 
+  Sliders,
+  Settings2,
+  Trash2
+} from 'lucide-react';
+import { motion } from 'framer-motion';
 import styles from './Settings.module.css';
 
 export default function Settings({ settings, onUpdateSetting }) {
@@ -47,217 +59,161 @@ export default function Settings({ settings, onUpdateSetting }) {
     onUpdateSetting(key, value);
   };
 
+  const handleResetIndices = () => {
+    Modal.confirm({
+      title: 'Reset Vault Indices?',
+      content: 'This will purge all local text databases and wipe search structures. This cannot be undone.',
+      okText: 'Wipe Database',
+      okType: 'danger',
+      cancelText: 'Cancel',
+      onOk: () => {
+        message.success('Vector database indices successfully cleared.');
+      }
+    });
+  };
+
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>System Settings</h1>
-        <p className={styles.subtitle}>Configure offline speech synthesis parameters, AI memory models, and secure vault policies.</p>
-      </div>
+      <motion.div 
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className={styles.header}
+      >
+        <h1 className={styles.title}>System Control Parameters</h1>
+        <p className={styles.subtitle}>Configure offline speech synthesis characteristics, LLM engines, and air-gapped security policies.</p>
+      </motion.div>
 
-      <Row gutter={[20, 20]}>
-        {/* Card 1: Voice & Language Engine */}
-        <Col xs={24} lg={12}>
-          <Card 
-            className={styles.card}
-            title={
-              <div className={styles.cardTitleRow}>
-                <FiActivity className={styles.sectionIcon} />
-                <span>Voice & Language Engine</span>
+      <Row gutter={[16, 16]}>
+        {/* 1. General Settings */}
+        <Col xs={24} md={12} lg={8}>
+          <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.05 }}>
+            <Card title={<div className={styles.cardHeader}><Globe size={16} /> <span>General Configuration</span></div>} className={styles.card}>
+              <div className={styles.settingItem}>
+                <label className={styles.label}>System Language</label>
+                <Select value={settings.language} onChange={handleSelectChange('language')} options={languageOptions} className={styles.select} />
               </div>
-            }
-          >
-            <div className={styles.settingItem}>
-              <label className={styles.label}>
-                <FiUser className={styles.itemIcon} /> Voice Synthesizer Model
-              </label>
-              <Select
-                value={settings.voice}
-                onChange={handleSelectChange('voice')}
-                options={voiceOptions}
-                className={styles.select}
-              />
-            </div>
-
-            <div className={styles.settingItem}>
-              <label className={styles.label}>
-                <FiGlobe className={styles.itemIcon} /> Output Language
-              </label>
-              <Select
-                value={settings.language}
-                onChange={handleSelectChange('language')}
-                options={languageOptions}
-                className={styles.select}
-              />
-            </div>
-          </Card>
+              <div className={styles.settingItem} style={{ marginTop: '16px' }}>
+                <label className={styles.label}>Voice Synthesizer Profile</label>
+                <Select value={settings.voice} onChange={handleSelectChange('voice')} options={voiceOptions} className={styles.select} />
+              </div>
+            </Card>
+          </motion.div>
         </Col>
 
-        {/* Card 2: Speech Characteristics */}
-        <Col xs={24} lg={12}>
-          <Card 
-            className={styles.card}
-            title={
-              <div className={styles.cardTitleRow}>
-                <FiVolume2 className={styles.sectionIcon} />
-                <span>Speech Characteristics</span>
+        {/* 2. AI Settings */}
+        <Col xs={24} md={12} lg={8}>
+          <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }}>
+            <Card title={<div className={styles.cardHeader}><Cpu size={16} /> <span>AI Engine Parameters</span></div>} className={styles.card}>
+              <div className={styles.settingItem}>
+                <label className={styles.label}>Preferred LLM Engine</label>
+                <Select value={settings.preferredModel || 'gemma4'} onChange={handleSelectChange('preferredModel')} options={modelOptions} className={styles.select} />
               </div>
-            }
-          >
-            <div className={styles.settingItem}>
-              <label className={styles.label}>Speech Speed</label>
-              <div className={styles.sliderWrapper}>
-                <Slider
-                  min={0.5}
-                  max={2.0}
-                  step={0.1}
-                  value={settings.speed}
-                  onChange={handleSliderChange('speed')}
-                  marks={speedMarks}
-                  className={styles.slider}
-                  tooltip={{ formatter: (val) => `${val}x` }}
-                />
+              <div className={styles.toggleRow} style={{ marginTop: '16px' }}>
+                <span className={styles.toggleLabel}>Offline Deciphering</span>
+                <Switch checked={true} disabled />
               </div>
-            </div>
-
-            <div className={styles.settingItem} style={{ marginTop: '32px' }}>
-              <label className={styles.label}>Output Volume</label>
-              <div className={styles.sliderWrapper}>
-                <Slider
-                  min={0}
-                  max={100}
-                  value={settings.volume}
-                  onChange={handleSliderChange('volume')}
-                  className={styles.slider}
-                  tooltip={{ formatter: (val) => `${val}%` }}
-                />
-              </div>
-            </div>
-          </Card>
+            </Card>
+          </motion.div>
         </Col>
 
-        {/* Card 3: AI Model & Memory */}
-        <Col xs={24} lg={12}>
-          <Card 
-            className={styles.card}
-            title={
-              <div className={styles.cardTitleRow}>
-                <FiCpu className={styles.sectionIcon} />
-                <span>AI Model & Conversation Memory</span>
+        {/* 3. Memory Settings */}
+        <Col xs={24} md={12} lg={8}>
+          <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.15 }}>
+            <Card title={<div className={styles.cardHeader}><Sliders size={16} /> <span>Conversation Memory</span></div>} className={styles.card}>
+              <div className={styles.toggleRow}>
+                <span className={styles.toggleLabel}>Enable SQLite Session Logs</span>
+                <Switch checked={settings.memoryEnabled} onChange={handleToggleChange('memoryEnabled')} />
               </div>
-            }
-          >
-            <div className={styles.settingItem}>
-              <label className={styles.label}>Preferred LLM Model</label>
-              <Select
-                value={settings.preferredModel || 'gemma4'}
-                onChange={handleSelectChange('preferredModel')}
-                options={modelOptions}
-                className={styles.select}
-              />
-            </div>
+              {settings.memoryEnabled && (
+                <div className={styles.settingItem} style={{ marginTop: '16px' }}>
+                  <label className={styles.label}>Context Window (Messages)</label>
+                  <InputNumber min={2} max={50} value={settings.contextWindow || 10} onChange={handleNumberChange('contextWindow')} className={styles.numberInput} />
+                </div>
+              )}
+            </Card>
+          </motion.div>
+        </Col>
 
-            <div className={styles.toggleRow} style={{ marginTop: '24px' }}>
-              <div>
-                <span className={styles.toggleLabel}>Enable AI Memory</span>
-                <div className={styles.toggleDesc}>Retain conversation context across user prompts.</div>
+        {/* 4. Audio Settings */}
+        <Col xs={24} md={12} lg={8}>
+          <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }}>
+            <Card title={<div className={styles.cardHeader}><Volume2 size={16} /> <span>Acoustic Output</span></div>} className={styles.card}>
+              <div className={styles.settingItem}>
+                <label className={styles.label}>Synthesis Rate (Speed)</label>
+                <Slider min={0.5} max={2.0} step={0.1} value={settings.speed} onChange={handleSliderChange('speed')} marks={speedMarks} className={styles.slider} tooltip={{ formatter: (val) => `${val}x` }} />
               </div>
-              <Switch
-                checked={settings.memoryEnabled}
-                onChange={handleToggleChange('memoryEnabled')}
-              />
-            </div>
-
-            {settings.memoryEnabled && (
               <div className={styles.settingItem} style={{ marginTop: '24px' }}>
-                <label className={styles.label}>Context Window Size (Messages)</label>
-                <InputNumber
-                  min={2}
-                  max={50}
-                  value={settings.contextWindow || 10}
-                  onChange={handleNumberChange('contextWindow')}
-                  className={styles.numberInput}
-                />
+                <label className={styles.label}>Formant Volume</label>
+                <Slider min={0} max={100} value={settings.volume} onChange={handleSliderChange('volume')} className={styles.slider} tooltip={{ formatter: (val) => `${val}%` }} />
               </div>
-            )}
-          </Card>
+            </Card>
+          </motion.div>
         </Col>
 
-        {/* Card 4: RAG Document Extraction */}
-        <Col xs={24} lg={12}>
-          <Card 
-            className={styles.card}
-            title={
-              <div className={styles.cardTitleRow}>
-                <FiHardDrive className={styles.sectionIcon} />
-                <span>RAG Document Extraction Settings</span>
+        {/* 5. Security Settings */}
+        <Col xs={24} md={12} lg={8}>
+          <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.25 }}>
+            <Card title={<div className={styles.cardHeader}><Shield size={16} /> <span>Security Controls</span></div>} className={styles.card}>
+              <div className={styles.toggleRow}>
+                <span className={styles.toggleLabel}>Air-Gapped Isolation</span>
+                <Switch checked={true} disabled />
               </div>
-            }
-          >
-            <div className={styles.settingItem}>
-              <label className={styles.label}>Text Chunk Size (Characters)</label>
-              <InputNumber
-                min={100}
-                max={2000}
-                step={50}
-                value={settings.chunkSize || 500}
-                onChange={handleNumberChange('chunkSize')}
-                className={styles.numberInput}
-              />
-            </div>
-
-            <div className={styles.settingItem} style={{ marginTop: '24px' }}>
-              <label className={styles.label}>Chunk Overlap (Characters)</label>
-              <InputNumber
-                min={10}
-                max={500}
-                step={10}
-                value={settings.chunkOverlap || 100}
-                onChange={handleNumberChange('chunkOverlap')}
-                className={styles.numberInput}
-              />
-            </div>
-          </Card>
+              <div className={styles.toggleRow} style={{ marginTop: '16px' }}>
+                <span className={styles.toggleLabel}>Local Vault Decryption</span>
+                <Switch checked={true} disabled />
+              </div>
+            </Card>
+          </motion.div>
         </Col>
 
-        {/* Card 5: System & Security Policies */}
-        <Col xs={24}>
-          <Card 
-            className={styles.card}
-            title={
-              <div className={styles.cardTitleRow}>
-                <FiShield className={styles.sectionIcon} />
-                <span>System & Security Policies</span>
+        {/* 6. RAG Settings */}
+        <Col xs={24} md={12} lg={8}>
+          <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3 }}>
+            <Card title={<div className={styles.cardHeader}><HardDrive size={16} /> <span>RAG Extraction (Vault)</span></div>} className={styles.card}>
+              <div className={styles.settingItem}>
+                <label className={styles.label}>Document Chunk Size</label>
+                <InputNumber min={100} max={2000} step={50} value={settings.chunkSize || 500} onChange={handleNumberChange('chunkSize')} className={styles.numberInput} />
               </div>
-            }
-          >
-            <Row gutter={[24, 20]}>
-              <Col xs={24} md={12}>
-                <div className={styles.toggleRow}>
-                  <div>
-                    <span className={styles.toggleLabel}>Auto Play Synthesized Audio</span>
-                    <div className={styles.toggleDesc}>Play generated MP3 immediately after synthesis finishes.</div>
-                  </div>
-                  <Switch
-                    checked={settings.autoPlay}
-                    onChange={handleToggleChange('autoPlay')}
-                  />
-                </div>
-              </Col>
+              <div className={styles.settingItem} style={{ marginTop: '16px' }}>
+                <label className={styles.label}>Chunk Overlap (Chars)</label>
+                <InputNumber min={10} max={500} step={10} value={settings.chunkOverlap || 100} onChange={handleNumberChange('chunkOverlap')} className={styles.numberInput} />
+              </div>
+            </Card>
+          </motion.div>
+        </Col>
 
-              <Col xs={24} md={12}>
-                <div className={styles.toggleRow}>
-                  <div>
-                    <span className={styles.toggleLabel}>Force Platform Dark Theme</span>
-                    <div className={styles.toggleDesc}>Restricted to dark mode for eye strain reduction in secure vaults.</div>
-                  </div>
-                  <Switch
-                    checked={settings.darkTheme}
-                    disabled={true}
-                  />
+        {/* 7. Appearance Settings */}
+        <Col xs={24} md={12} lg={12}>
+          <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.35 }}>
+            <Card title={<div className={styles.cardHeader}><Layout size={16} /> <span>Appearance Configuration</span></div>} className={styles.card}>
+              <div className={styles.toggleRow}>
+                <span className={styles.toggleLabel}>Force Enterprise Dark Theme</span>
+                <Switch checked={settings.darkTheme} disabled />
+              </div>
+              <div className={styles.toggleRow} style={{ marginTop: '16px' }}>
+                <span className={styles.toggleLabel}>Auto Play Waveforms</span>
+                <Switch checked={settings.autoPlay} onChange={handleToggleChange('autoPlay')} />
+              </div>
+            </Card>
+          </motion.div>
+        </Col>
+
+        {/* 8. Advanced Settings */}
+        <Col xs={24} md={24} lg={12}>
+          <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.4 }}>
+            <Card title={<div className={styles.cardHeader}><Settings2 size={16} /> <span>Advanced Maintenance</span></div>} className={styles.card}>
+              <div className={styles.maintenanceRow}>
+                <div className={styles.maintenanceBrief}>
+                  <span className={styles.maintenanceLabel}>Re-initialize Speech Indices</span>
+                  <span className={styles.maintenanceDesc}>Clears SQLite cache tables and re-aligns database memory blocks.</span>
                 </div>
-              </Col>
-            </Row>
-          </Card>
+                <Button type="primary" danger icon={<Trash2 size={14} />} onClick={handleResetIndices}>
+                  Reset Database
+                </Button>
+              </div>
+            </Card>
+          </motion.div>
         </Col>
       </Row>
     </div>

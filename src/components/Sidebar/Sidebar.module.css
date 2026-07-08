@@ -1,5 +1,5 @@
 .sider {
-  background-color: var(--color-bg-card) !important;
+  background-color: var(--color-bg-sidebar) !important;
   border-right: 1px solid var(--color-border);
   height: 100vh;
   position: sticky;
@@ -7,6 +7,14 @@
   left: 0;
   display: flex;
   flex-direction: column;
+  z-index: 99;
+}
+
+.sider :global(.ant-layout-sider-children) {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
 }
 
 .logoContainer {
@@ -15,23 +23,22 @@
   align-items: center;
   gap: 12px;
   padding: 0 20px;
-  background-color: var(--color-navy-dark);
+  background-color: rgba(255, 255, 255, 0.01);
   border-bottom: 1px solid var(--color-border);
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .logoBadge {
-  background-color: var(--color-primary);
+  background: linear-gradient(135deg, #2E8BFF 0%, #1a6fd4 100%);
   color: white;
   width: 32px;
   height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 850;
-  font-size: 1.15rem;
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(30, 136, 229, 0.4);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(46, 139, 255, 0.3);
   flex-shrink: 0;
 }
 
@@ -44,32 +51,33 @@
 
 .logoTitle {
   color: var(--color-text-main);
-  font-weight: 800;
-  font-size: 1.1rem;
-  letter-spacing: 1px;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
 }
 
 .logoSubtitle {
   color: var(--color-primary);
-  font-weight: 700;
-  font-size: 0.6rem;
+  font-weight: 600;
+  font-size: 0.55rem;
   letter-spacing: 0.5px;
 }
 
 .menu {
   background: transparent !important;
   border: none !important;
-  padding-top: 16px;
+  padding: 16px 0;
+  flex: 1;
 }
 
 .menu :global(.ant-menu-item) {
-  height: 48px !important;
-  margin: 4px 10px !important;
-  border-radius: 6px !important;
-  width: calc(100% - 20px) !important;
+  height: 44px !important;
+  margin: 4px 12px !important;
+  border-radius: 8px !important;
+  width: calc(100% - 24px) !important;
   display: flex !important;
   align-items: center !important;
-  font-weight: 550 !important;
+  font-weight: 500 !important;
   color: var(--color-text-secondary) !important;
   transition: var(--transition-smooth) !important;
 }
@@ -80,12 +88,113 @@
 }
 
 .menu :global(.ant-menu-item:hover) {
-  background-color: rgba(255, 255, 255, 0.03) !important;
+  background-color: var(--color-bg-card-hover) !important;
   color: var(--color-text-main) !important;
 }
 
-.icon {
-  font-size: 16px;
+/* Sidebar Footer Widgets */
+.footerSection {
+  padding: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.collapsedFooterIcon {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
+  background-color: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+}
+
+.footerInner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.divider {
+  border-top: 1px solid var(--color-border);
+  width: 100%;
+}
+
+.footerWidget {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background-color: rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--color-border);
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.widgetHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.widgetLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.widgetIcon {
+  color: var(--color-primary);
+}
+
+.widgetValue {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  font-family: monospace;
+}
+
+.widgetProgress {
+  margin: 0 !important;
+}
+
+.sysBriefGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background-color: rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--color-border);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.sysBriefItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sysBriefItem:last-child {
+  grid-column: span 2;
+  border-top: 1px solid var(--color-border);
+  padding-top: 6px;
+  margin-top: 4px;
+}
+
+.sysBriefLabel {
+  font-size: 0.6rem;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.sysBriefValue {
+  font-size: 0.7rem;
+  color: var(--color-text-main);
+  font-weight: 700;
+  font-family: monospace;
 }
 
 @keyframes fadeIn {

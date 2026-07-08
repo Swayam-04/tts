@@ -1,5 +1,7 @@
 .card {
-  border-radius: 10px !important;
+  border-radius: 12px !important;
+  background-color: var(--color-bg-card) !important;
+  border: 1px solid var(--color-border) !important;
 }
 
 .intro {
@@ -17,15 +19,38 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 1.1rem;
-  font-weight: 700;
+  font-size: 1.05rem;
+  font-weight: 600;
   color: var(--color-text-main);
   margin-bottom: 12px;
 }
 
 .icon {
   color: var(--color-primary);
-  font-size: 18px;
+}
+
+.creditsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.creditBadge {
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--color-border);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: var(--color-text-main);
+  font-weight: 500;
+  text-align: center;
+  transition: var(--transition-smooth);
+}
+
+.creditBadge:hover {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-alpha);
 }
 
 .descriptions {
@@ -39,9 +64,15 @@
 }
 
 .descriptions :global(.ant-descriptions-item-content) {
-  background-color: var(--color-bg-card) !important;
+  background-color: rgba(0, 0, 0, 0.1) !important;
   border-color: var(--color-border) !important;
   color: var(--color-text-main) !important;
+}
+
+.tagBadge {
+  border: none;
+  font-weight: 500;
+  border-radius: 4px;
 }
 
 .helpText {
@@ -73,7 +104,7 @@
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .panelIcon {
@@ -92,11 +123,11 @@
 }
 
 .code {
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.35);
   border: 1px solid var(--color-border);
   padding: 10px 14px;
-  border-radius: 6px;
-  color: var(--color-primary);
+  border-radius: 8px;
+  color: var(--color-accent);
   font-family: monospace;
   font-size: 0.8rem;
   margin-top: 10px;

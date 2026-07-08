@@ -2,10 +2,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 24px;
-  background-color: var(--color-navy-dark);
+  padding: 0 24px;
+  background-color: rgba(13, 23, 41, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--color-border);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-main);
   height: 64px;
   position: sticky;
   top: 0;
@@ -23,19 +25,15 @@
   align-items: center;
   justify-content: center;
   color: var(--color-text-secondary) !important;
-  border-radius: 6px !important;
+  border-radius: 8px !important;
   width: 36px !important;
   height: 36px !important;
   transition: var(--transition-smooth);
 }
 
 .toggleBtn:hover {
-  background-color: var(--color-border) !important;
+  background-color: var(--color-bg-card-hover) !important;
   color: var(--color-text-main) !important;
-}
-
-.menuIcon {
-  font-size: 18px;
 }
 
 .iconContainer {
@@ -43,8 +41,8 @@
   align-items: center;
   justify-content: center;
   background-color: var(--color-primary-alpha);
-  border: 1px solid var(--color-primary);
-  border-radius: 6px;
+  border: 1px solid rgba(46, 139, 255, 0.2);
+  border-radius: 8px;
   width: 36px;
   height: 36px;
   flex-shrink: 0;
@@ -52,21 +50,28 @@
 
 .shieldIcon {
   color: var(--color-primary);
-  font-size: 18px;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
 }
 
 .title {
-  font-size: 1.25rem;
-  font-weight: 800;
+  font-size: 1.15rem;
+  font-weight: 700;
   letter-spacing: 0.5px;
   color: var(--color-text-main);
-  line-height: 1.1;
+  margin: 0;
 }
 
 .subtitle {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   color: var(--color-text-secondary);
   font-weight: 600;
+  letter-spacing: 1px;
+  margin: 0;
 }
 
 .right {
@@ -75,82 +80,99 @@
   gap: 16px;
 }
 
+.metaBadge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--color-border);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  font-family: monospace;
+}
+
+.metaIcon {
+  color: var(--color-primary);
+}
+
+.timeDisplay {
+  font-size: 0.8rem;
+  font-family: monospace;
+  color: var(--color-text-secondary);
+  background-color: rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--color-border);
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
 .statusPill {
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: rgba(46, 164, 79, 0.1);
-  border: 1px solid rgba(46, 164, 79, 0.2);
-  padding: 6px 12px;
-  border-radius: 20px;
+  padding: 6px 14px;
+  border-radius: 8px;
   font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.5px;
-  color: var(--color-text-main);
   cursor: help;
+  transition: var(--transition-smooth);
+}
+
+.online {
+  background-color: rgba(49, 209, 123, 0.1);
+  border: 1px solid rgba(49, 209, 123, 0.2);
+  color: var(--color-status-green);
+}
+
+.offline {
+  background-color: rgba(255, 94, 94, 0.1);
+  border: 1px solid rgba(255, 94, 94, 0.2);
+  color: var(--color-status-red);
 }
 
 .statusText {
-  color: #c9d1d9;
+  font-size: 0.75rem;
 }
 
-.settingsBtn {
+.actionBtn {
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--color-text-secondary) !important;
-  border-radius: 6px !important;
+  border-radius: 8px !important;
   width: 36px !important;
   height: 36px !important;
   transition: var(--transition-smooth);
+  background-color: transparent !important;
 }
 
-.settingsBtn:hover {
-  background-color: var(--color-border) !important;
+.actionBtn:hover {
+  background-color: var(--color-bg-card-hover) !important;
   color: var(--color-text-main) !important;
 }
 
-.settingsIcon {
-  font-size: 18px;
-}
-
-@media (max-width: 768px) {
-  .header {
-    padding: 10px 16px;
-  }
-  
-  .title {
-    font-size: 1.1rem;
-  }
-  
-  .subtitle {
-    font-size: 0.65rem;
-  }
-
-  .statusPill {
-    padding: 4px 8px;
-  }
-
-  .statusText {
+@media (max-width: 1024px) {
+  .metaBadge, .timeDisplay {
     display: none;
   }
 }
 
-.logoutBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #ff4d4f !important;
-  border-radius: 6px !important;
-  width: 36px !important;
-  height: 36px !important;
-  transition: var(--transition-smooth);
-}
-
-.logoutBtn:hover {
-  background-color: rgba(255, 77, 79, 0.1) !important;
-}
-
-.logoutIcon {
-  font-size: 18px;
+@media (max-width: 768px) {
+  .header {
+    padding: 0 16px;
+  }
+  
+  .subtitle {
+    display: none;
+  }
+  
+  .statusText {
+    display: none;
+  }
+  
+  .statusPill {
+    padding: 6px;
+  }
 }

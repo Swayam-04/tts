@@ -1,81 +1,60 @@
 .container {
-  padding: 24px;
+  padding: 0px;
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
 .header {
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .title {
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: #f0f6fc;
-  margin: 0 0 8px 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin: 0 0 6px 0;
 }
 
 .subtitle {
-  font-size: 0.95rem;
-  color: #8b949e;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
   margin: 0;
   line-height: 1.5;
 }
 
 .card {
-  background-color: #0e1626 !important;
-  border: 1px solid #162238 !important;
+  background-color: var(--color-bg-card) !important;
+  border: 1px solid var(--color-border) !important;
   border-radius: 12px !important;
   height: 100%;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
 }
 
-.card :global(.ant-card-head) {
-  border-bottom: 1px solid #162238 !important;
-  padding: 0 24px !important;
-}
-
-.card :global(.ant-card-body) {
-  padding: 24px !important;
-}
-
-.cardTitleRow {
+.cardHeader {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 1.05rem;
+  gap: 8px;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: #f0f6fc;
+  color: var(--color-text-main);
 }
 
-.sectionIcon {
-  color: #1e88e5;
-  font-size: 18px;
+.cardHeader svg {
+  color: var(--color-primary);
 }
 
 .settingItem {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.settingItem:last-child {
-  margin-bottom: 0;
-}
-
-.label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #8b949e;
-  display: flex;
-  align-items: center;
   gap: 8px;
 }
 
-.itemIcon {
-  color: #1e88e5;
+.label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .select {
@@ -83,68 +62,85 @@
 }
 
 .select :global(.ant-select-selector) {
-  background-color: rgba(0, 0, 0, 0.25) !important;
-  border-color: #162238 !important;
-  color: #f0f6fc !important;
-  height: 40px !important;
-  padding: 4px 12px !important;
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text-main) !important;
+  height: 38px !important;
+  padding: 3px 10px !important;
   border-radius: 8px !important;
 }
 
 .select :global(.ant-select-selection-item) {
-  color: #f0f6fc !important;
+  color: var(--color-text-main) !important;
   line-height: 30px !important;
 }
 
-.sliderWrapper {
-  padding: 0 8px;
-}
-
 .slider {
-  margin: 14px 0 10px 0 !important;
+  margin: 10px 0 6px 0 !important;
 }
 
 .slider :global(.ant-slider-mark-text) {
-  color: #8b949e !important;
-  font-size: 11px;
+  color: var(--color-text-secondary) !important;
+  font-size: 10px;
 }
 
 .numberInput {
   width: 100% !important;
-  background-color: rgba(0, 0, 0, 0.25) !important;
-  border-color: #162238 !important;
-  color: #f0f6fc !important;
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text-main) !important;
   border-radius: 8px !important;
-  height: 40px !important;
+  height: 38px !important;
 }
 
 .numberInput :global(.ant-input-number-input) {
-  height: 38px !important;
-  color: #f0f6fc !important;
+  height: 36px !important;
+  color: var(--color-text-main) !important;
 }
 
 .toggleRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px;
-  background-color: rgba(255, 255, 255, 0.01);
-  border: 1px solid #162238;
-  border-radius: 10px;
-  height: 100%;
-  gap: 16px;
+  padding: 12px 14px;
+  background-color: rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  gap: 12px;
 }
 
 .toggleLabel {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  color: #f0f6fc;
-  display: block;
+  color: var(--color-text-main);
 }
 
-.toggleDesc {
+.maintenanceRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background-color: rgba(255, 94, 94, 0.03);
+  border: 1px dashed rgba(255, 94, 94, 0.2);
+  border-radius: 8px;
+}
+
+.maintenanceBrief {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 70%;
+}
+
+.maintenanceLabel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.maintenanceDesc {
   font-size: 0.75rem;
-  color: #8b949e;
-  margin-top: 4px;
+  color: var(--color-text-secondary);
   line-height: 1.4;
 }

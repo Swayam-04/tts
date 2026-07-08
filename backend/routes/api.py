@@ -10,7 +10,7 @@ from config import Config
 from logger import flask_logger
 
 # Import memory helpers
-from memory.memory import load_preferences, save_message, get_recent_context, start_new_conversation, get_db
+from memory.memory import load_preferences, save_message, get_recent_context, start_new_conversation, get_db, save_audio_log, get_audio_logs, clear_audio_logs
 
 api_bp = Blueprint("api", __name__)
 
@@ -150,15 +150,33 @@ def generate_report():
             total_latency = time.time() - start_time
             flask_logger.info("Conversation pipeline completed in %.2fs", total_latency)
             
+            # Save to database audio_logs
+            try:
+                voice = prefs.get("preferred_voice", "Default")
+                speed = prefs.get("speech_speed", 1.0)
+                save_audio_log(
+                    id=f"clip_{int(time.time() * 1000)}",
+                    voice=voice,
+                    speed=speed,
+                    text=response_text,
+                    audio_path=f"/static/audio/{audio_filename}",
+                    duration_seconds=audio_result.get("duration", 0.0),
+                    response_time=round(total_latency, 2)
+                )
+            except Exception as db_err:
+                flask_logger.error("Failed to save audio log to SQLite: %s", db_err)
+            
             return jsonify({
                 "success": True,
                 "generated_text": response_text,
                 "audio_file": f"/static/audio/{audio_filename}",
                 "audio_duration": audio_result.get("duration", 0.0),
                 "conversation_id": conversation_id,
+                "response_time": round(total_latency, 2),
                 "latencies": {
                     "ollama": round(ollama_latency, 2),
                     "chatterbox": round(tts_latency, 2),
+                    "encoding": audio_result.get("encoding_time", 0.0),
                     "total": round(total_latency, 2)
                 }
             }), 200
@@ -175,13 +193,51 @@ def generate_report():
         response_data = PipelineOrchestrator.generate_response(prompt)
         
         # Save both prompt and assistant response automatically if successful
-        if response_data.get("success") and conversation_id:
+        if response_data.get("success"):
+            # Save audio log to database
             try:
-                save_message(conversation_id, "user", prompt)
-                save_message(conversation_id, "assistant", response_data.get("generated_text"))
-                response_data["conversation_id"] = conversation_id
-                flask_logger.info("Automatically saved prompt and response to conversation ID: %s", conversation_id)
-            except Exception as e:
-                flask_logger.error(f"Failed to auto-save messages to SQLite: {e}")
+                prefs = load_preferences(user_id)
+                voice = prefs.get("preferred_voice", "Default")
+                speed = prefs.get("speech_speed", 1.0)
+                save_audio_log(
+                    id=f"clip_{int(time.time() * 1000)}",
+                    voice=voice,
+                    speed=speed,
+                    text=response_data.get("generated_text"),
+                    audio_path=response_data.get("audio_file"),
+                    duration_seconds=response_data.get("audio_duration", 0.0),
+                    response_time=response_data.get("response_time", 0.0)
+                )
+            except Exception as db_err:
+                flask_logger.error("Failed to save standard audio log to SQLite: %s", db_err)
+                
+            if conversation_id:
+                try:
+                    save_message(conversation_id, "user", prompt)
+                    save_message(conversation_id, "assistant", response_data.get("generated_text"))
+                    response_data["conversation_id"] = conversation_id
+                    flask_logger.info("Automatically saved prompt and response to conversation ID: %s", conversation_id)
+                except Exception as e:
+                    flask_logger.error(f"Failed to auto-save messages to SQLite: {e}")
                 
         return jsonify(response_data), 200
+
+@api_bp.route("/audio-logs", methods=["GET"])
+def list_audio_logs():
+    """Lists all generation audio logs, automatically resolving missing durations."""
+    try:
+        logs = get_audio_logs()
+        return jsonify({"success": True, "logs": logs}), 200
+    except Exception as e:
+        flask_logger.error("Failed to list audio logs: %s", e)
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@api_bp.route("/audio-logs", methods=["DELETE"])
+def clear_logs():
+    """Clears all audio logs from the database."""
+    try:
+        clear_audio_logs()
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        flask_logger.error("Failed to clear audio logs: %s", e)
+        return jsonify({"success": False, "error": str(e)}), 500

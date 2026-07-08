@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Card, Button, Slider, Space, Tooltip } from 'antd';
-import { FiPlay, FiPause, FiVolume2, FiVolumeX, FiDownload, FiRotateCcw } from 'react-icons/fi';
+import { Card, Button, Slider, Tooltip } from 'antd';
+import { Play, Pause, Volume2, VolumeX, Download, RotateCcw } from 'lucide-react';
 import { playAudio, downloadAudio as downloadAudioService } from '../../services/ttsService';
 import styles from './AudioPlayer.module.css';
 
-export default function AudioPlayer({ audioUrl, autoPlay }) {
+export default function AudioPlayer({ audioUrl, autoPlay, text }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -15,7 +15,6 @@ export default function AudioPlayer({ audioUrl, autoPlay }) {
   // Initialize Audio
   useEffect(() => {
     audioRef.current = new Audio();
-    
     const audio = audioRef.current;
 
     const handleTimeUpdate = () => {
@@ -51,9 +50,7 @@ export default function AudioPlayer({ audioUrl, autoPlay }) {
       setCurrentTime(0);
       setIsPlaying(false);
       
-      // Auto-play support
       if (autoPlay) {
-        // Use a short timeout to let the UI register the load
         setTimeout(() => {
           playAudio(audioRef.current)
             .then(() => setIsPlaying(true))
@@ -68,10 +65,8 @@ export default function AudioPlayer({ audioUrl, autoPlay }) {
     }
   }, [audioUrl, autoPlay]);
 
-  // Handle Play/Pause
   const togglePlay = () => {
     if (!audioUrl) return;
-    
     if (isPlaying) {
       audioRef.current.pause();
       setIsPlaying(false);
@@ -82,7 +77,6 @@ export default function AudioPlayer({ audioUrl, autoPlay }) {
     }
   };
 
-  // Handle Replay
   const handleReplay = () => {
     if (!audioUrl || !audioRef.current) return;
     audioRef.current.currentTime = 0;
@@ -91,14 +85,12 @@ export default function AudioPlayer({ audioUrl, autoPlay }) {
       .catch(err => console.error("Error replaying audio:", err));
   };
 
-  // Handle Seek
   const handleSeek = (value) => {
     if (!audioUrl) return;
     audioRef.current.currentTime = value;
     setCurrentTime(value);
   };
 
-  // Handle Volume Change
   const handleVolumeChange = (value) => {
     setVolume(value);
     setIsMuted(value === 0);
@@ -108,7 +100,6 @@ export default function AudioPlayer({ audioUrl, autoPlay }) {
     }
   };
 
-  // Toggle Mute
   const toggleMute = () => {
     const nextMuted = !isMuted;
     setIsMuted(nextMuted);
@@ -117,13 +108,11 @@ export default function AudioPlayer({ audioUrl, autoPlay }) {
     }
   };
 
-  // Download Audio
   const downloadAudio = () => {
     if (!audioUrl) return;
     downloadAudioService(audioUrl, `vaani_speech_${Date.now()}.mp3`);
   };
 
-  // Format time (MM:SS)
   const formatTime = (timeInSecs) => {
     if (isNaN(timeInSecs)) return '00:00';
     const mins = Math.floor(timeInSecs / 60);
@@ -131,8 +120,7 @@ export default function AudioPlayer({ audioUrl, autoPlay }) {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Generate mock waves for visualizer
-  const waveBarsCount = 28;
+  const waveBarsCount = 36;
   const renderWavebars = () => {
     const bars = [];
     for (let i = 0; i < waveBarsCount; i++) {
@@ -141,7 +129,6 @@ export default function AudioPlayer({ audioUrl, autoPlay }) {
           key={i} 
           className={`wave-bar ${isPlaying ? 'active' : ''}`}
           style={{
-            // Add custom heights for inactive state so it looks like a sound wave
             height: isPlaying ? undefined : `${4 + Math.sin(i * 0.4) * 12 + Math.cos(i * 0.2) * 8}px`
           }}
         />
@@ -155,16 +142,12 @@ export default function AudioPlayer({ audioUrl, autoPlay }) {
   return (
     <Card 
       className={styles.card}
-      title={
-        <div>
-          <div className="card-title">Generated Audio</div>
-        </div>
-      }
+      title={<span className="card-title">Acoustic Player Deck</span>}
       extra={
         <Tooltip title={isPlayerDisabled ? "No audio generated yet" : "Download MP3 file"}>
           <Button
             type="primary"
-            icon={<FiDownload />}
+            icon={<Download size={14} />}
             disabled={isPlayerDisabled}
             onClick={downloadAudio}
             className={styles.downloadBtn}
@@ -186,7 +169,7 @@ export default function AudioPlayer({ audioUrl, autoPlay }) {
             type="primary" 
             shape="circle" 
             size="large"
-            icon={isPlaying ? <FiPause /> : <FiPlay />}
+            icon={isPlaying ? <Pause size={18} /> : <Play size={18} />}
             onClick={togglePlay}
             disabled={isPlayerDisabled}
             className={`${styles.playBtn} ${isPlaying ? styles.pulseBtn : ''}`}
@@ -195,7 +178,7 @@ export default function AudioPlayer({ audioUrl, autoPlay }) {
             <Button 
               type="default"
               shape="circle"
-              icon={<FiRotateCcw />}
+              icon={<RotateCcw size={16} />}
               onClick={handleReplay}
               disabled={isPlayerDisabled}
               className={styles.replayBtn}
@@ -220,7 +203,7 @@ export default function AudioPlayer({ audioUrl, autoPlay }) {
         <div className={styles.volumeContainer}>
           <Button 
             type="text" 
-            icon={isMuted ? <FiVolumeX /> : <FiVolume2 />}
+            icon={isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
             onClick={toggleMute}
             disabled={isPlayerDisabled}
             className={styles.volumeBtn}
@@ -235,6 +218,20 @@ export default function AudioPlayer({ audioUrl, autoPlay }) {
           />
         </div>
       </div>
+
+      {text && (
+        <div className={styles.speechTextContainer}>
+          <div className={styles.speechTextHeader}>
+            <span>Active Transcription</span>
+            <span className={styles.speechTimer}>
+              {isPlaying ? "Speaking..." : "Paused"} ({formatTime(currentTime)} / {formatTime(duration)})
+            </span>
+          </div>
+          <div className={styles.speechTextContent}>
+            {text}
+          </div>
+        </div>
+      )}
     </Card>
   );
 }

@@ -1,6 +1,12 @@
-# 🎙️ VAANI AI – Offline Secure Speech Intelligence Platform
+# 🎙️ VAANI – Offline Secure Speech Intelligence Platform
 
-VAANI AI is an offline speech intelligence platform that converts coded missile information into natural English using a local LLM (Ollama) and generates speech using Chatterbox TTS.
+VAANI is an air-gapped, offline speech intelligence platform that converts coded missile information into natural English using a local LLM (Ollama) and generates high-fidelity speech using Chatterbox TTS.
+
+### 🌟 Key Features Added
+- **⚡ Real-Time Processing Telemetry**: Displays exact processing times for every stage with emoji badges (Response Time, Gemma 4, Chatterbox, MP3 Encoding, Audio Length).
+- **📝 Spoken Text transcription overlay**: Dynamic transcription blocks inside the custom audio player synchronized with the current playback time.
+- **📂 Persistent SQLite Audio Logs**: Database persistence logs storing configurations (speed, voice, duration, response time) with automated self-healing duration computation on startup.
+- **🎨 Brand Alignment**: Soundwave vector assets replacement and unified interface style.
 
 ---
 
@@ -52,7 +58,7 @@ VAANI-AI/
 
 # 🚀 Beginner's Installation Guide (All Platforms)
 
-This section provides a detailed, step-by-step guide to installing VAANI AI on Windows, macOS, and Linux.
+This section provides a detailed, step-by-step guide to installing VAANI on Windows, macOS, and Linux.
 
 ## Step 1: Install Core Dependencies (Prerequisites)
 
@@ -191,7 +197,7 @@ npm install @vitejs/plugin-react
 
 ---
 
-# 🎮 Running VAANI AI
+# 🎮 Running VAANI
 
 ## Easy Start (Windows Only)
 If you are on Windows, simply double-click the **`VaaniAI.exe`** executable file in the root folder. It will safely open all required services (Ollama, Flask, React) in automated background windows for you!
