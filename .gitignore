@@ -32,4 +32,7 @@ backend/static/audio/*.wav
 *.exe
 backend/instance/
 backend/uploads/
+backend/venv/
+backend/venv.zip
+*.zip
 

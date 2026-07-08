@@ -20,6 +20,10 @@ app.register_blueprint(documents_bp)
 db_init()
 
 # --- JSON error handlers so Flask never returns HTML to the React frontend ---
+@app.errorhandler(401)
+def unauthorized(e):
+    return jsonify({"success": False, "error": "Unauthorized", "status": 401}), 401
+
 @app.errorhandler(404)
 def not_found(e):
     return jsonify({"success": False, "error": "Endpoint not found", "status": 404}), 404
