@@ -63,6 +63,7 @@ export function usePipeline() {
       throw valError;
     }
     parsedData.language = settings.language || 'en';
+    parsedData.voice = settings.voice || 'default';
 
     // Reset state parameters
     setIsGenerating(true);

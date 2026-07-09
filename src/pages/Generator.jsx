@@ -113,6 +113,11 @@ export default function Generator({
     }
   }, [audioUrl, decodedText]);
 
+  // Invalidate cached audios when settings.voice changes
+  useEffect(() => {
+    setGeneratedAudios({ en: null, hi: null });
+  }, [settings?.voice]);
+
   const handleListenEn = async () => {
     if (generatedAudios.en) {
       setActiveAudioUrl(generatedAudios.en);
@@ -122,7 +127,7 @@ export default function Generator({
     try {
       setSynthesisLoading(true);
       setSynthesisLang('en');
-      const res = await synthesizeSpeech(decodedText, 'en', false);
+      const res = await synthesizeSpeech(decodedText, 'en', false, settings.voice);
       if (res && res.success) {
         const fullUrl = res.audio_file.startsWith('http') ? res.audio_file : `http://127.0.0.1:5000${res.audio_file}`;
         setGeneratedAudios(prev => ({ ...prev, en: fullUrl }));
@@ -147,12 +152,12 @@ export default function Generator({
       setActiveAudioText(generatedAudios.hi.translatedText);
       return;
     }
-    const requestBody = { text: decodedText, language: 'hi', translate: true };
+    const requestBody = { text: decodedText, language: 'hi', translate: true, voice: settings.voice };
     console.log("Hindi synthesis request:", requestBody);
     try {
       setSynthesisLoading(true);
       setSynthesisLang('hi');
-      const res = await synthesizeSpeech(decodedText, 'hi', true);
+      const res = await synthesizeSpeech(decodedText, 'hi', true, settings.voice);
       if (res && res.success) {
         const fullUrl = res.audio_file.startsWith('http') ? res.audio_file : `http://127.0.0.1:5000${res.audio_file}`;
         setGeneratedAudios(prev => ({

@@ -117,33 +117,92 @@ git clone https://github.com/Swayam-04/tts.git
 cd tts
 ```
 
-## Step 2: Set Up Backend & Chatterbox TTS
-Chatterbox is a local, high-fidelity neural Text-to-Speech library deployed completely in-process within the Flask backend. To configure the virtual environment and install the Chatterbox dependency:
+## Step 2: Install System-Level Dependencies (FFmpeg)
+
+Chatterbox TTS and audio processing libraries (like `librosa`, `torchaudio`, and `pydub`) require **FFmpeg** to decode reference WAV files and encode outputs.
 
 ### 🪟 Windows Setup
-```cmd
-cd backend
-python -m venv venv
-venv\Scripts\activate
-pip install -r requirements.txt
+1. Download FFmpeg from [Gyan.dev](https://www.gyan.dev/ffmpeg/builds/).
+2. Extract the folder and copy the path to the `bin` directory (e.g. `C:\ffmpeg\bin`).
+3. Add this path to your system's environment variable `PATH`.
+4. Verification: Open a new command prompt and run `ffmpeg -version`.
+
+### 🍎 macOS Setup
+Install via Homebrew:
+```bash
+brew install ffmpeg
 ```
 
-### 🍎 macOS / 🐧 Linux Setup
+### 🐧 Linux Setup
+Install via Advanced Package Tool:
 ```bash
-cd backend
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+sudo apt update
+sudo apt install -y ffmpeg
 ```
+
+---
+
+## Step 3: Set Up Backend & Chatterbox TTS
+
+Chatterbox is a local, high-fidelity neural Text-to-Speech library deployed completely in-process within the Flask backend. To configure the virtual environment and install dependencies:
+
+1. Navigate to the `backend` folder and create a virtual environment:
+   ```bash
+   cd backend
+   python -m venv venv
+   ```
+2. Activate the virtual environment:
+   - **Windows (CMD)**: `venv\Scripts\activate`
+   - **Windows (PowerShell)**: `.\venv\Scripts\Activate.ps1`
+   - **macOS/Linux**: `source venv/bin/activate`
+
+3. **Install PyTorch & Torchaudio**:
+   Chatterbox runs neural network inference. It is highly recommended to run with CUDA GPU acceleration if a compatible NVIDIA GPU is available:
+   - **GPU (CUDA 12.1 - Recommended)**:
+     ```bash
+     pip install torch==2.6.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cu121
+     ```
+   - **CPU Fallback (Standard)**:
+     ```bash
+     pip install torch==2.6.0 torchaudio==2.6.0
+     ```
+
+4. **Install Chatterbox Engine & Backend Packages**:
+   Install the remaining Python modules declared in `requirements.txt`:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+   **What gets installed:**
+   - `chatterbox-tts==0.1.7`: The core neural TTS synthesizer.
+   - `resemble-perth==1.0.1` & `s3tokenizer==0.3.0`: Neural speaker conditioning tokenizer and encoder model.
+   - `librosa==0.11.0` & `soundfile==0.14.0`: Advanced audio reading, resampling, and waveform rendering.
+   - `lameenc==1.8.4`: High-performance MP3 encoding engine to output web-ready audio streams.
+   - `mutagen==1.48.1`: Audio duration reader for SQL log records.
+   - `pymupdf==1.28.0` & `pdfplumber==0.11.10`: Document Vault PDF extractors.
+   - `Flask==3.0.3` & `Flask-Cors==4.0.1`: Local API server routing.
 
 *(Note: During backend startup, Chatterbox will automatically pull model checkpoints from Hugging Face: `ResembleAI/chatterbox` for English and `ResembleAI/Chatterbox-Multilingual-hi` for Hindi. The weight checkpoints are cached locally in your Hugging Face cache folder `~/.cache/huggingface` for completely offline execution.)*
 
-## Step 3: Set Up React Frontend
-Open a new Terminal, navigate to the root directory (where `package.json` is located), and install the Node packages:
+---
+
+## Step 4: Set Up React Frontend
+
+Navigate back to the project root directory (where `package.json` is located) and install the Node.js modules:
 
 ```bash
 npm install
 ```
+
+**What gets installed:**
+- `react@19.2.7` & `react-dom@19.2.7`: Core application framework.
+- `antd@6.5.0`: Ant Design enterprise component system.
+- `framer-motion@12.42.2`: High-fidelity page transitions and micro-animations.
+- `lucide-react@1.23.0` & `react-icons@5.6.0`: Platform soundwave, player, and navigation icons.
+- `react-router-dom@7.18.0`: UI routing and layout path resolver.
+- `vite@8.1.0` (dev): Lightweight, rapid development build utility.
+- `@vitejs/plugin-react@6.0.2` (dev): Hot Module Replacement compiler configurations for React.
+- `oxlint@1.69.0` (dev): Ultra-fast compiler linters.
 
 ---
 
@@ -208,11 +267,32 @@ curl http://127.0.0.1:5000/diagnostics
   "current_model": "gemma4",
   "current_voice": "ResembleAI/chatterbox",
   "engine": "chatterbox",
-  "available_voices": ["Default"],
+  "available_voices": [
+    {"id": "en", "name": "English Pack", "device": "cuda"},
+    {"id": "hi", "name": "Hindi Pack", "device": "cuda"}
+  ],
   "memory_mb": 420.5
 }
 ```
 *(Confirm that `"chatterbox": true` and `"ollama": true` are returned in the JSON payload).*
+
+---
+
+# 🎙️ Voice Profiles & True Voice Switching
+
+VAANI supports true voice switching across four distinct voice profiles. Each profile is defined by a unique reference audio file (WAV) stored in `backend/voices/` from which neural speaker embeddings are extracted:
+
+| Profile Value | UI Display Label | Reference File | Narration Style |
+| :--- | :--- | :--- | :--- |
+| `default` | **Default System** | `default.wav` | Default balanced system voice |
+| `male` | **Male** | `male.wav` | Professional male voice |
+| `female` | **Female** | `female.wav` | Professional female voice |
+| `neural` | **Neural Voice (DRDO Spec)** | `drdo.wav` | Formal defense-style narration |
+
+When a voice profile is selected:
+1. The frontend invalidates cached audios and passes the voice ID (`default`, `male`, `female`, or `neural`) in the request payload.
+2. The Flask server matches the ID in its internal `VOICE_MAP` configuration to load the corresponding reference file path on disk.
+3. The Chatterbox TTS engine extracts speaker embeddings and tokenizes conditional cues dynamically for each segment, guaranteeing a structurally and audibly unique voice.
 
 ---
 
@@ -230,9 +310,9 @@ curl http://127.0.0.1:5000/diagnostics
 - **Issue**: Starting the backend fails with `ModuleNotFoundError` or returns HTTP 500 when request is made.
 - **Fix**: Verify that you activated the virtual environment (`venv`) before executing `python app.py`. If packages are missing, run `pip install -r requirements.txt` again inside the virtual environment.
 
-### 4. No Voices Available
+### 4. No Voices Available (Language Packs Not Loaded)
 - **Issue**: The diagnostics endpoint returns an empty array for `"available_voices"`.
-- **Fix**: The default single-pack is loaded as `"Default"`. Ensure `chatterbox-tts` package is correctly installed in your python environment.
+- **Fix**: Verify that the English and Hindi Chatterbox model directories exist and are initialized correctly in the backend. Ensure you have activated your virtual environment before starting the server.
 
 ### 5. Model 'gemma4' Not Found
 - **Issue**: Server start logs display that the Ollama model `gemma4` is missing.

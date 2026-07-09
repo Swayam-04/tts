@@ -98,14 +98,14 @@ export async function generateMissileReport(data) {
  * @param {boolean} translate - Whether to translate English to Hindi
  * @returns {Promise<Object>} Synthesis details
  */
-export async function synthesizeSpeech(text, language, translate = false) {
+export async function synthesizeSpeech(text, language, translate = false, voice = 'default') {
   try {
     const response = await fetch(`${BASE_URL}/synthesize-speech`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ text, language, translate }),
+      body: JSON.stringify({ text, language, translate, voice }),
     });
 
     if (!response.ok) {

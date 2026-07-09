@@ -44,6 +44,13 @@ export default function Documents({ settings, backendOnline }) {
   const [speechStage, setSpeechStage] = useState('');
   const [activeTextToSpeak, setActiveTextToSpeak] = useState('');
 
+  // Clear active audio player when voice changes
+  useEffect(() => {
+    setAudioUrl(null);
+    setSpeechStage('');
+    setActiveTextToSpeak('');
+  }, [settings?.voice]);
+
   // Load documents on mount
   useEffect(() => {
     if (backendOnline) {
@@ -169,7 +176,8 @@ export default function Documents({ settings, backendOnline }) {
         body: JSON.stringify({
           document_id: doc.id,
           read_type: "full",
-          language: language
+          language: language,
+          voice: settings.voice
         })
       });
       

@@ -297,6 +297,7 @@ def read_document():
         language = data.get("language") or prefs.get("language", "en")
         if language not in ['en', 'hi']:
             language = 'en'
+        voice = data.get("voice") or prefs.get("preferred_voice", "default")
 
         # Translate to Hindi if requested
         if language == 'hi':
@@ -313,7 +314,7 @@ def read_document():
         
         # Capture generation metrics and exceptions
         try:
-            audio_result = generate_speech_audio(text_to_read, static_audio_dir, language=language)
+            audio_result = generate_speech_audio(text_to_read, static_audio_dir, language=language, voice=voice)
         except Exception as tts_err:
             flask_logger.exception("Chatterbox TTS call failed:")
             err_msg = str(tts_err)
@@ -328,7 +329,6 @@ def read_document():
         
         # Save to database audio_logs
         try:
-            voice = prefs.get("preferred_voice", "Default")
             speed = prefs.get("speech_speed", 1.0)
             save_audio_log(
                 id=f"clip_{int(time.time() * 1000)}",

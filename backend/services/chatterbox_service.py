@@ -12,6 +12,16 @@ _chatterbox_model_en = None
 _chatterbox_model_hi = None
 _model_lock = threading.Lock()
 
+# Centralized voice profiles map pointing to different reference audio files
+_backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+VOICE_MAP = {
+    "default": os.path.join(_backend_dir, "voices", "default.wav"),
+    "male": os.path.join(_backend_dir, "voices", "male.wav"),
+    "female": os.path.join(_backend_dir, "voices", "female.wav"),
+    "drdo": os.path.join(_backend_dir, "voices", "drdo.wav"),
+    "neural": os.path.join(_backend_dir, "voices", "drdo.wav")
+}
+
 def check_chatterbox_status() -> bool:
     """Compatibility wrapper for health check."""
     return health()
@@ -224,10 +234,26 @@ def chunk_text_for_tts(text: str) -> list:
         chunks.append(" ".join(current_chunk))
     return chunks
 
-def generate_speech_audio(text: str, output_dir: str, language: str = 'en') -> dict:
+def generate_speech_audio(text: str, output_dir: str, language: str = 'en', voice: str = 'default') -> dict:
     """Generate speech using Chatterbox TTS and save to MP3 with auto-chunking & cleaning"""
     global _chatterbox_model_en, _chatterbox_model_hi
     
+    # Validate incoming voice
+    if not voice or voice not in VOICE_MAP:
+        voice = "default"
+        
+    reference_audio = VOICE_MAP[voice]
+    if not os.path.exists(reference_audio):
+        raise ChatterboxError(f"Voice profile unavailable: Reference audio file for '{voice}' is missing.")
+        
+    # Debug logging
+    chatterbox_logger.info("Selected Voice: %s", voice)
+    chatterbox_logger.info("Reference File: %s", reference_audio)
+    chatterbox_logger.info("Generation Started")
+    print(f"Selected Voice: {voice}")
+    print(f"Reference File: {reference_audio}")
+    print("Generation Started")
+
     start_time = time.time()
     
     # 1. Clean input formatting
@@ -276,9 +302,9 @@ def generate_speech_audio(text: str, output_dir: str, language: str = 'en') -> d
                 # Chatterbox generation
                 try:
                     if language == 'hi':
-                        audio_tensor = model.generate(sentence, language_id='hi')
+                        audio_tensor = model.generate(sentence, language_id='hi', audio_prompt_path=reference_audio)
                     else:
-                        audio_tensor = model.generate(sentence)
+                        audio_tensor = model.generate(sentence, audio_prompt_path=reference_audio)
                 except Exception as gen_err:
                     chatterbox_logger.error("Chatterbox returned an error during synthesis: %s", gen_err)
                     raise ChatterboxError(f"Chatterbox returned an error: {str(gen_err)}")
@@ -294,6 +320,10 @@ def generate_speech_audio(text: str, output_dir: str, language: str = 'en') -> d
                         audio_tensor = audio_tensor.unsqueeze(0)
                 
                 all_audio.append(audio_tensor)
+                
+        # Debug logging
+        chatterbox_logger.info("Generation Completed")
+        print("Generation Completed")
                 
         if not all_audio:
             raise ChatterboxError("Failed to generate audio: No audio tensors generated.")

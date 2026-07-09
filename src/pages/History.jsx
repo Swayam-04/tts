@@ -40,6 +40,12 @@ export default function History({ settings, backendOnline, onAudioGenerated }) {
   const [progress, setProgress] = useState(0);
   const [readingMessageId, setReadingMessageId] = useState(null);
 
+  // Clear active audio player when voice changes
+  useEffect(() => {
+    setActiveAudioUrl(null);
+    setActiveSpokenText('');
+  }, [settings?.voice]);
+
   const messageEndRef = useRef(null);
 
   // Load conversations on mount
@@ -289,14 +295,14 @@ export default function History({ settings, backendOnline, onAudioGenerated }) {
 
   const handleReadAloudMessage = async (msgId, content, language = 'en', translate = false) => {
     setReadingMessageId(`${msgId}_${language}`);
-    const requestBody = { text: content, language, translate };
+    const requestBody = { text: content, language, translate, voice: settings.voice };
     if (language === 'hi') {
       console.log("Hindi synthesis request:", requestBody);
     } else {
       console.log("English synthesis request:", requestBody);
     }
     try {
-      const res = await synthesizeSpeech(content, language, translate);
+      const res = await synthesizeSpeech(content, language, translate, settings.voice);
       if (res && res.success && res.audio_file) {
         const generatedAudioUrl = res.audio_file.startsWith('http') 
           ? res.audio_file 

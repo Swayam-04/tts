@@ -8,10 +8,10 @@ from logger import pipeline_logger
 
 class PipelineOrchestrator:
     @staticmethod
-    def generate_response(prompt, language='en'):
+    def generate_response(prompt, language='en', voice='default'):
         try:
             start_time = time.time()
-            pipeline_logger.info("Starting pipeline generation for prompt: %s, language: %s", prompt, language)
+            pipeline_logger.info("Starting pipeline generation for prompt: %s, language: %s, voice: %s", prompt, language, voice)
             
             # 1. Ollama Stage
             try:
@@ -30,7 +30,7 @@ class PipelineOrchestrator:
             try:
                 tts_start = time.time()
                 static_audio_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "audio")
-                audio_result = generate_speech_audio(response_text, static_audio_dir, language=language)
+                audio_result = generate_speech_audio(response_text, static_audio_dir, language=language, voice=voice)
                 audio_filename = audio_result["filename"]
                 tts_latency = time.time() - tts_start
                 pipeline_logger.info("Chatterbox stage completed in %.2fs", tts_latency)

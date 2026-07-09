@@ -5,10 +5,10 @@ import styles from './SettingsDrawer.module.css';
 
 export default function SettingsDrawer({ visible, onClose, settings, onUpdateSetting }) {
   const voiceOptions = [
-    { value: 'default', label: 'Default System' },
-    { value: 'male', label: 'Male (Chatterbox)' },
-    { value: 'female', label: 'Female (Chatterbox)' },
-    { value: 'neural', label: 'Neural Voice (DRDO Spec)' }
+    { value: 'default', label: 'Default System', description: 'Default application voice' },
+    { value: 'male', label: 'Male', description: 'Professional male narration' },
+    { value: 'female', label: 'Female', description: 'Professional female narration' },
+    { value: 'neural', label: 'Neural Voice', description: 'Formal defence-style narration' }
   ];
 
   const languageOptions = [
@@ -61,15 +61,24 @@ export default function SettingsDrawer({ visible, onClose, settings, onUpdateSet
         <div className={styles.settingBlock}>
           <div className={styles.labelRow}>
             <FiUser className={styles.icon} />
-            <span>Voice Selection</span>
+            <span>Voice Profile</span>
           </div>
           <Select
             value={settings.voice}
             onChange={handleSelectChange('voice')}
-            options={voiceOptions}
+            optionLabelProp="label"
             className={styles.select}
             popupClassName={styles.selectPopup}
-          />
+          >
+            {voiceOptions.map(opt => (
+              <Select.Option key={opt.value} value={opt.value} label={opt.label}>
+                <div style={{ display: 'flex', flexDirection: 'column', padding: '2px 0' }}>
+                  <span style={{ fontWeight: 600, fontSize: '13px', lineHeight: '18px', color: 'var(--color-text-main)' }}>{opt.label}</span>
+                  <span style={{ fontSize: '11px', color: '#b5c4d8', lineHeight: '14px' }}>{opt.description}</span>
+                </div>
+              </Select.Option>
+            ))}
+          </Select>
         </div>
 
         {/* Language Selection */}

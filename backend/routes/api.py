@@ -102,6 +102,7 @@ def generate_report():
     language = data.get("language") or prefs.get("language", "en")
     if language not in ['en', 'hi']:
         language = 'en'
+    voice = data.get("voice") or prefs.get("preferred_voice", "default")
 
     if data.get("conversation_id") and memory_enabled:
         flask_logger.info("Using persistent conversational pipeline for conversation ID: %s", conversation_id)
@@ -141,7 +142,7 @@ def generate_report():
             try:
                 tts_start = time.time()
                 static_audio_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "static", "audio")
-                audio_result = generate_speech_audio(response_text, static_audio_dir, language=language)
+                audio_result = generate_speech_audio(response_text, static_audio_dir, language=language, voice=voice)
                 audio_filename = audio_result["filename"]
                 tts_latency = time.time() - tts_start
                 flask_logger.info("Chatterbox stage completed in %.2fs", tts_latency)
@@ -157,7 +158,6 @@ def generate_report():
             
             # Save to database audio_logs
             try:
-                voice = prefs.get("preferred_voice", "Default")
                 speed = prefs.get("speech_speed", 1.0)
                 save_audio_log(
                     id=f"clip_{int(time.time() * 1000)}",
@@ -200,14 +200,13 @@ def generate_report():
        
         
         flask_logger.info("Delegating to standard PipelineOrchestrator (No memory context)")
-        response_data = PipelineOrchestrator.generate_response(final_prompt, language=language)
+        response_data = PipelineOrchestrator.generate_response(final_prompt, language=language, voice=voice)
         
         # Save both prompt and assistant response automatically if successful
         if response_data.get("success"):
             # Save audio log to database
             try:
                 prefs = load_preferences(user_id)
-                voice = prefs.get("preferred_voice", "Default")
                 speed = prefs.get("speech_speed", 1.0)
                 save_audio_log(
                     id=f"clip_{int(time.time() * 1000)}",
@@ -265,6 +264,13 @@ def synthesize_speech_endpoint():
     translate = data.get("translate", False)
     user_id = data.get("user_id", "default")
     
+    # Load preferences
+    try:
+        prefs = load_preferences(user_id)
+    except Exception:
+        prefs = {}
+    voice = data.get("voice") or prefs.get("preferred_voice", "default")
+    
     if not text:
         return jsonify({"success": False, "error": "No text provided"}), 400
         
@@ -289,7 +295,7 @@ def synthesize_speech_endpoint():
         try:
             tts_start = time.time()
             static_audio_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "static", "audio")
-            audio_result = generate_speech_audio(translated_text, static_audio_dir, language=language)
+            audio_result = generate_speech_audio(translated_text, static_audio_dir, language=language, voice=voice)
             audio_filename = audio_result["filename"]
             tts_time = time.time() - tts_start
             flask_logger.info("Chatterbox stage completed in %.2fs", tts_time)

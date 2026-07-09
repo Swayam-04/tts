@@ -17,10 +17,10 @@ import styles from './Settings.module.css';
 
 export default function Settings({ settings, onUpdateSetting }) {
   const voiceOptions = [
-    { value: 'default', label: 'Default System Voice' },
-    { value: 'male', label: 'Male (Chatterbox)' },
-    { value: 'female', label: 'Female (Chatterbox)' },
-    { value: 'neural', label: 'Neural Voice (DRDO Spec)' }
+    { value: 'default', label: 'Default System', description: 'Default application voice' },
+    { value: 'male', label: 'Male', description: 'Professional male narration' },
+    { value: 'female', label: 'Female', description: 'Professional female narration' },
+    { value: 'neural', label: 'Neural Voice', description: 'Formal defence-style narration' }
   ];
 
   const languageOptions = [
@@ -89,8 +89,22 @@ export default function Settings({ settings, onUpdateSetting }) {
           <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.05 }}>
             <Card title={<div className={styles.cardHeader}><Globe size={16} /> <span>General Configuration</span></div>} className={styles.card}>
               <div className={styles.settingItem}>
-                <label className={styles.label}>Voice Synthesizer Profile</label>
-                <Select value={settings.voice} onChange={handleSelectChange('voice')} options={voiceOptions} className={styles.select} />
+                <label className={styles.label}>Voice Profile</label>
+                <Select 
+                  value={settings.voice} 
+                  onChange={handleSelectChange('voice')} 
+                  optionLabelProp="label"
+                  className={styles.select}
+                >
+                  {voiceOptions.map(opt => (
+                    <Select.Option key={opt.value} value={opt.value} label={opt.label}>
+                      <div style={{ display: 'flex', flexDirection: 'column', padding: '2px 0' }}>
+                        <span style={{ fontWeight: 600, fontSize: '13px', lineHeight: '18px' }}>{opt.label}</span>
+                        <span style={{ fontSize: '11px', color: '#b5c4d8', lineHeight: '14px' }}>{opt.description}</span>
+                      </div>
+                    </Select.Option>
+                  ))}
+                </Select>
               </div>
             </Card>
           </motion.div>
