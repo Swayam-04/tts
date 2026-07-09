@@ -4,7 +4,7 @@ VAANI is an air-gapped, offline speech intelligence platform that converts coded
 
 ### 🌟 Key Features
 - **⚡ Real-Time Processing Telemetry**: Displays exact processing times for every stage with emoji badges (Response Time, Gemma 4, Chatterbox, MP3 Encoding, Audio Length).
-- **📝 Spoken Text transcription overlay**: Dynamic transcription blocks inside the custom audio player synchronized with the current playback time.
+- **📝 Spoken Text Transcription Overlay**: Dynamic transcription blocks inside the custom audio player synchronized with the current playback time.
 - **📂 Persistent SQLite Audio Logs**: Database persistence logs storing configurations (speed, voice, duration, response time) with automated self-healing duration computation on startup.
 - **🎨 Brand Alignment**: Soundwave vector assets replacement and unified interface style.
 - **🌐 Offline Dual Speech Output**: Real-time generation of English speech and on-demand translation to natural Hindi speech with single-language Chatterbox models.
@@ -51,7 +51,7 @@ VAANI-AI/
 │   ├── app.py         # Main Flask Server
 │   ├── config.py      # App configurations
 │   ├── exceptions.py  # Error classes
-│   ├── logger.py      # setup logging
+│   ├── logger.py      # Setup logging
 │   ├── pipeline.py    # Pipeline Orchestration
 │   ├── requirements.txt # Python dependencies
 │   ├── memory/
@@ -65,89 +65,70 @@ VAANI-AI/
 │   └── instance/
 │       └── vaani.db   # Local SQLite Database
 │
-├── start_server.bat   # Automated Master Startup Script (Windows only)
 └── README.md          # Setup & Installation documentation
 ```
 
 ---
 
-# 🚀 Complete Installation Guide (All Platforms)
+# 🔎 Verify Prerequisites
 
-This section provides a detailed, step-by-step guide to installing VAANI on Windows, macOS, and Linux.
+Before installing the platform, verify that the required prerequisite software is installed on your system using the following verification commands:
 
-## Step 1: Install Core Dependencies (Prerequisites)
-
-Before starting, you must install these core tools on your system:
-
-1. **Python (3.10 or 3.11 recommended)**
-   - Windows/macOS: Download from [python.org/downloads](https://www.python.org/downloads/)
-   - Linux (Ubuntu/Debian): `sudo apt install python3 python3-pip python3-venv`
-2. **Node.js (Version 20 or higher)**
-   - Windows/macOS: Download from [nodejs.org](https://nodejs.org/)
-   - Linux: Use NodeSource or nvm to install Node 20+.
-3. **Git**
-   - Windows/macOS: Download from [git-scm.com](https://git-scm.com/)
-   - Linux: `sudo apt install git`
-4. **Ollama (Local AI Engine)**
-   - Windows/macOS: Download from [ollama.com/download](https://ollama.com/download)
-   - Linux: `curl -fsSL https://ollama.com/install.sh | sh`
-
-*(Note: FFmpeg is NO LONGER required! Audio is generated securely as a native MP3 format via lameenc).*
+| Software | Check Command | Expected Output |
+| :--- | :--- | :--- |
+| **Python** | `python --version` | Python 3.10.x or 3.11.x |
+| **Pip** | `pip --version` | pip 23.x or later |
+| **Node.js** | `node --version` | v20.x or later |
+| **npm** | `npm --version` | 10.x or later |
+| **Git** | `git --version` | git version 2.x |
+| **Ollama** | `ollama --version` | ollama version 0.x.x |
+| **uv** | `uv --version` | uv 0.x.x (Python package manager, optional) |
+| **FFmpeg** | `ffmpeg -version` | FFmpeg version 4.x or later |
+| **SQLite** | `sqlite3 --version` | SQLite version 3.x.x |
 
 ---
 
-## Step 2: Download the Local LLM Model
+# 🧠 Verify Installed AI Models
 
-Once Ollama is installed, open your Terminal or Command Prompt and download the `gemma4` model. This model will run offline on your machine:
+To confirm that the offline Gemma LLM is downloaded and available to Ollama, run:
 
-```bash
-ollama pull gemma4
-```
-Wait for the download to finish. You can verify it downloaded successfully by running:
 ```bash
 ollama list
 ```
 
----
+Make sure the required model name **`gemma4`** appears in the output list:
 
-## Step 3: Clone the Repository
-
-Open your Terminal or Command Prompt, navigate to the folder where you want to store the project, and run:
-
-```bash
-git clone https://github.com/Swayam-04/Vaani-AI.git
-cd Vaani-AI
+```
+NAME            ID              SIZE      MODIFIED
+gemma4:latest   xxxxxxxxx       9.6 GB    xxx ago
 ```
 
 ---
 
-## Step 4: Setup by Operating System
+# 🚀 Offline Installation Guide
 
-Choose the tab for your operating system below to install the frontend and backend dependencies.
+Follow these steps to configure the backend virtual environment, Chatterbox TTS engine, and Vite React client on your local machine.
+
+## Step 1: Clone the Repository
+Open your Terminal or Command Prompt, navigate to your target folder, and clone the repository:
+
+```bash
+git clone https://github.com/Swayam-04/tts.git
+cd tts
+```
+
+## Step 2: Set Up Backend & Chatterbox TTS
+Chatterbox is a local, high-fidelity neural Text-to-Speech library deployed completely in-process within the Flask backend. To configure the virtual environment and install the Chatterbox dependency:
 
 ### 🪟 Windows Setup
-
-**1. Install Backend Dependencies**
-Open Command Prompt and run:
 ```cmd
 cd backend
 python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
 ```
-*(If `requirements.txt` fails, run: `pip install flask flask-cors requests python-dotenv torch torchaudio chatterbox-tts mutagen lameenc`)*
 
-**2. Install Frontend Dependencies**
-Go back to the root directory and install React packages:
-```cmd
-cd ..
-npm install
-```
-
-### 🍎 macOS Setup
-
-**1. Install Backend Dependencies**
-Open Terminal and run:
+### 🍎 macOS / 🐧 Linux Setup
 ```bash
 cd backend
 python3 -m venv venv
@@ -155,234 +136,125 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-**2. Install Frontend Dependencies**
-Go back to the root directory and install React packages:
+*(Note: During backend startup, Chatterbox will automatically pull model checkpoints from Hugging Face: `ResembleAI/chatterbox` for English and `ResembleAI/Chatterbox-Multilingual-hi` for Hindi. The weight checkpoints are cached locally in your Hugging Face cache folder `~/.cache/huggingface` for completely offline execution.)*
+
+## Step 3: Set Up React Frontend
+Open a new Terminal, navigate to the root directory (where `package.json` is located), and install the Node packages:
+
 ```bash
-cd ..
 npm install
 ```
 
-### 🐧 Linux Setup
+---
 
-**1. Install Backend Dependencies**
-Open Terminal and run:
+# 🎮 Running VAANI
+
+To run the application locally, open **three separate terminals** and execute the commands below.
+
+### Terminal 1: Start Ollama (AI Engine)
+```bash
+ollama serve
+```
+*(If it indicates the port is already in use, the Ollama service is already active in the background. You can close this terminal).*
+
+### Terminal 2: Start Flask Backend (TTS & API)
 ```bash
 cd backend
-python3 -m venv venv
+# Windows:
+venv\Scripts\activate
+# macOS/Linux:
 source venv/bin/activate
-pip install -r requirements.txt
-```
 
-**2. Install Frontend Dependencies**
-Go back to the root directory and install React packages:
-```bash
-cd ..
-npm install
-```
-
----
-
-# 📦 Required Node Modules (Manual Installation)
-
-If you prefer to install the frontend dependencies individually rather than using `npm install`, you can run these commands one by one:
-
-```bash
-npm install react react-dom react-router-dom axios antd lucide-react react-hot-toast framer-motion clsx tailwindcss @headlessui/react @heroicons/react react-icons vite @vitejs/plugin-react
-```
-Prerequisites Verification
-Before installing dependencies, verify that the required software is already installed.
-Software
-Check Command
-Expected Output
-Python
-python --version
-Python 3.10+
-Pip
-pip --version
-pip 23.x or later
-Node.js
-node --version
-v20.x or later
-npm
-npm --version
-10.x or later
-Git
-git --version
-git version 2.x
-Ollama
-ollama --version
-Ollama version
-uv (Python package manager)
-uv --version
-uv 0.x.x
-FFmpeg
-ffmpeg -version
-FFmpeg version
-SQLite
-sqlite3 --version
-SQLite version (optional)
-Check Installed AI Models
-To see which Ollama models are available:
-ollama list
-Example:
-NAME            ID             SIZE
-gemma4          xxxxxxxxx      9.6 GB
-llama3.2:3b     xxxxxxxxx      2.0 GB
-qwen3:8b        xxxxxxxxx      5.2 GB
-Verify Ollama Service
-Check whether Ollama is running:
-curl http://127.0.0.1:11434/api/tags
-or simply open:
-http://127.0.0.1:11434
-Verify Flask Backend
-curl http://127.0.0.1:5000/health
-Expected:
-{
-    "status": "ok"
-}
-Verify Chatterbox
-Open in browser:
-http://127.0.0.1:8000/health
-or
-http://127.0.0.1:3900/health
-(depending on the configured port)
-Expected:
-{
-    "status": "ok"
-}
-Verify React Frontend
-Start the frontend:
-npm run dev
-Then open:
-http://localhost:5173
-Verify Python Packages
-pip list
-or
-pip freeze
-Verify Node Packages
-npm list
-To check a specific package:
-npm list react
-npm list vite
-npm list axios
-Verify GPU (Optional)
-For NVIDIA GPUs:
-nvidia-smi
-Verify Environment Variables
-If using a .env file:
-type .env
-or (PowerShell):
-Get-Content .env
-Install Missing Software
-If any command is not recognized, install the corresponding software:
-Software
-Download
-Python
-https://www.python.org/downloads/⁠�
-Node.js
-https://nodejs.org/⁠�
-Git
-https://git-scm.com/downloads⁠�
-Ollama
-https://ollama.com/download⁠�
-uv
-pip install uv
-FFmpeg
-https://ffmpeg.org/download.html⁠�
----
-# 🎮 Running VAANI AI
-
-VAANI AI is distributed as source code. The executable (`VaaniAI.exe`) is **not included** in this GitHub repository.
-
-To run the project, start the required services manually.
-
-## Terminal 1 – Start Ollama
-
-```bash
-ollama serve
-```
-
-## Terminal 2 – Start the Flask Backend
-
-```bash
-cd backend
 python app.py
 ```
+*(This starts the backend on `http://127.0.0.1:5000` and initializes both English and Hindi Chatterbox models in memory).*
 
-## Terminal 3 – Start the Frontend
-
+### Terminal 3: Start React Frontend (Vite)
+Navigate to the root directory (where `package.json` is located):
 ```bash
-cd frontend
-npm install
 npm run dev
 ```
+*(This launches the React interface on `http://localhost:5173`).*
 
-Once all services are running, open your browser and navigate to:
-
-```
-http://localhost:5173
-```
-
-The application is now ready to use.
-
-## Manual Start (macOS / Linux / Advanced Users)
-If you are on a Mac or Linux, you will need to open **3 separate terminal windows**. Keep them all open simultaneously!
-
-**Terminal 1: Start Ollama**
-```bash
-ollama serve
-```
-*(If it says "port is already in use", Ollama is already running in the background. You can close this terminal).*
-
-**Terminal 2: Start Flask Backend (TTS & API)**
-```bash
-cd backend
-source venv/bin/activate   # On Windows use: venv\Scripts\activate
-python app.py
-```
-*(You should see it running on `http://127.0.0.1:5000`)*
-
-**Terminal 3: Start React Frontend**
-```bash
-# Make sure you are in the root VAANI-AI folder
-npm run dev
-```
-*(You should see it running on `http://localhost:5173`)*
-
-🎉 **Open your web browser and go to `http://localhost:5173` to use the application!**
+🎉 **Open your web browser and navigate to `http://localhost:5173` to start using the application!**
 
 ---
 
-# 🛠️ Verify Services / Troubleshooting
+# 🩺 Verify Services & API Health
 
-If something isn't working, use these commands to figure out what broke:
+You can verify that both the Flask backend and the Chatterbox TTS engine are running correctly by checking their endpoints:
 
-## 1. Verify Ollama is alive
-Open a new terminal and run:
-```bash
-curl http://localhost:11434/api/tags
-```
-If you get a connection refused error, your Ollama daemon (Terminal 1) crashed or isn't running.
-
-## 2. Verify Flask & Chatterbox are alive
-Open a new terminal and run:
+### 1. Verify Flask Backend Status
 ```bash
 curl http://127.0.0.1:5000/health
 ```
-Should return:
+**Expected Response:**
 ```json
 {
-  "status": "ok",
-  "tts": "chatterbox"
+  "status": "online"
 }
 ```
 
-## Common Errors
+### 2. Verify Component Diagnostics
+```bash
+curl http://127.0.0.1:5000/diagnostics
+```
+**Expected Response:**
+```json
+{
+  "flask": true,
+  "ollama": true,
+  "chatterbox": true,
+  "current_model": "gemma4",
+  "current_voice": "ResembleAI/chatterbox",
+  "engine": "chatterbox",
+  "available_voices": ["Default"],
+  "memory_mb": 420.5
+}
+```
+*(Confirm that `"chatterbox": true` and `"ollama": true` are returned in the JSON payload).*
 
-- **500 Internal Server Error in React:** Check Terminal 2 (Flask). Did you forget to activate the virtual environment (`venv`) before running `python app.py`? Are the Python packages installed?
-- **Port 5000 Already In Use:** 
-  - **Windows:** Run `netstat -ano | findstr :5000` and `taskkill /PID <PID> /F`
-  - **macOS/Linux:** Run `lsof -i :5000` and `kill -9 <PID>`
+---
+
+# 🛠️ Troubleshooting Guide
+
+### 1. Ollama Not Running / Connection Refused
+- **Issue**: Backend console outputs errors connecting to `http://127.0.0.1:11434`.
+- **Fix**: Verify that Terminal 1 running `ollama serve` is active, or launch the desktop Ollama client. Run `curl http://127.0.0.1:11434` in a terminal to confirm it is alive.
+
+### 2. Chatterbox Model Initialization Fails (`NoneType` or PyTorch Error)
+- **Issue**: Chatterbox fails to load during backend startup or returns `expected Tensor as element 0 in argument 0`.
+- **Fix**: This usually indicates a broken local snapshot download from Hugging Face or missing conditionals structure. Ensure you have a working internet connection during the first boot so python can download model files, or manually check that `ve.safetensors`, `t3_hi.safetensors`, and `s3gen.pt` are cached in `~/.cache/huggingface/hub`.
+
+### 3. Backend 500 Error / Module Not Found
+- **Issue**: Starting the backend fails with `ModuleNotFoundError` or returns HTTP 500 when request is made.
+- **Fix**: Verify that you activated the virtual environment (`venv`) before executing `python app.py`. If packages are missing, run `pip install -r requirements.txt` again inside the virtual environment.
+
+### 4. No Voices Available
+- **Issue**: The diagnostics endpoint returns an empty array for `"available_voices"`.
+- **Fix**: The default single-pack is loaded as `"Default"`. Ensure `chatterbox-tts` package is correctly installed in your python environment.
+
+### 5. Model 'gemma4' Not Found
+- **Issue**: Server start logs display that the Ollama model `gemma4` is missing.
+- **Fix**: Run `ollama pull gemma4` in your console to download the Gemma 4 model locally.
+
+### 6. Port Already in Use (Port 5000 or 5173)
+- **Issue**: Starting Flask or Vite outputs an EADDRINUSE error.
+- **Fix**:
+  - **Windows**: Run `netstat -ano | findstr :5000` (or `:5173`), then kill the process via task manager or command line: `taskkill /PID <PID> /F`.
+  - **macOS/Linux**: Run `lsof -i :5000` (or `:5173`), then kill it using `kill -9 <PID>`.
+
+### 7. Frontend Cannot Connect to Backend
+- **Issue**: The frontend loads, but shows a red "Offline" connection pill and requests fail.
+- **Fix**: Verify Flask is active and serving on `http://127.0.0.1:5000`. Check that CORS configuration is enabled in `app.py` via `CORS(app)`.
+
+### 8. Missing Python Packages
+- **Issue**: Starting python server outputs `ModuleNotFoundError: No module named 'lameenc'` (or `mutagen`, `pymupdf`, etc.).
+- **Fix**: Make sure you have python virtual environment activated and run `pip install -r requirements.txt`.
+
+### 9. Missing Node Packages
+- **Issue**: Running `npm run dev` returns package missing errors.
+- **Fix**: Run `npm install` in the root folder to download and install all frontend dependencies declared in `package.json`.
 
 ---
 
