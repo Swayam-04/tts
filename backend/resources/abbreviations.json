@@ -1,0 +1,50 @@
+{
+    "MSL": {
+        "field": "Missile"
+    },
+    "LOC": {
+        "field": "Launch Location"
+    },
+    "LCH": {
+        "field": "Launch Time"
+    },
+    "TGT": {
+        "field": "Target"
+    },
+    "RES": {
+        "field": "Result"
+    },
+    "STS": {
+        "field": "Status"
+    },
+    "OPS": {
+        "field": "Operational Status"
+    },
+    "OBJ": {
+        "field": "Mission Objective"
+    },
+    "TYP": {
+        "field": "Mission Type"
+    },
+    "SYS": {
+        "field": "System"
+    },
+    "PLT": {
+        "field": "Platform"
+    },
+    "ALT": {
+        "field": "Altitude"
+    },
+    "SPD": {
+        "field": "Speed"
+    },
+    "RNG": {
+        "field": "Range"
+    },
+    "TRK": {
+        "field": "Tracking Status"
+    },
+    "ID": {
+        "field": "Identification"
+    }
+}

@@ -5,6 +5,7 @@ from flask import Blueprint, request, jsonify
 from pipeline import PipelineOrchestrator
 from services.ollama_service import check_ollama_status, query_ollama_chat, query_ollama_model
 from services.chatterbox_service import check_chatterbox_status, list_models, generate_speech_audio
+from services.preprocessing_service import build_prompt
 from exceptions import OllamaError, ChatterboxError
 from config import Config
 from logger import flask_logger
@@ -69,6 +70,7 @@ def generate_report():
         }), 400
         
     prompt = str(data["text"]).strip()
+    final_prompt = build_prompt(prompt)
     conversation_id = data.get("conversation_id")
     user_id = data.get("user_id", "default")
     
@@ -194,8 +196,11 @@ def generate_report():
                 "reason": str(e)
             }), 500
     else:
+        
+       
+        
         flask_logger.info("Delegating to standard PipelineOrchestrator (No memory context)")
-        response_data = PipelineOrchestrator.generate_response(prompt, language=language)
+        response_data = PipelineOrchestrator.generate_response(final_prompt, language=language)
         
         # Save both prompt and assistant response automatically if successful
         if response_data.get("success"):
